@@ -3,15 +3,15 @@
 
 ### DEMO
 
-![DEMO]()
+<!-- ![DEMO](https://media.giphy.com/media/m7AUVTwTkKwzIQuu6K/giphy.gif)  -->
+
+<img src="https://media.giphy.com/media/m7AUVTwTkKwzIQuu6K/giphy.gif" alt="work_in_progress" width="100%" height="100%">
 
 ##
 
 ### About
 
 _This project is a web-based Learning Management System (LMS) implementation, inspired by platforms such as [Schoolify](https://schoolify.com/). Developed as an academic endeavor, its core objective is to provide a platform facilitating online education. The system enables educators to design and manage virtual courses, while students can enroll and actively participate in them. A key requirement of this project is the utilization of multiple database technologies to persist application data._
-
-_Features_
 
 ### Development environment
 
