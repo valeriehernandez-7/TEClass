@@ -1,23 +1,16 @@
-const { MongoClient } = require('mongodb');
+const connectMongo = require('./db/mongo');
 
-const uri = 'mongodb+srv://<user>:<password>@schoolify.z67yugl.mongodb.net/?retryWrites=true&w=majority&appName=Schoolify';
-const client = new MongoClient(uri);
+async function main() {
+  const { db: mongo, client: mongoClient } = await connectMongo();
 
-async function run() {
-  try {
-    await client.connect();
-    const db = client.db('ProyectoBD2');
-    const users = db.collection('User');
-    const allUsers = await users.find().toArray();
-    console.log(allUsers);
-  } catch (err) {
-    console.error(err);
-  } finally {
-    await client.close();
-  }
+  const users = await mongo.collection('User').find().toArray();
+  console.log('Users:', users);
+
+  await mongoClient.close(); 
 }
 
-run();
+main().catch(console.error);
+
 
 
 // Insertar datos
