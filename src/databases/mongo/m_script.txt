@@ -1,0 +1,180 @@
+Note - Access mongo container in docker with: docker exec -it mongo mongosh
+
+1. Use a database created in Mongo. If it doesn't exist, the command creates it.
+
+use proyectodb2
+
+2. Create the collection User
+
+db.createCollection("User", {
+    "capped": false,
+    "validator": {
+        "$jsonSchema": {
+            "bsonType": "object",
+            "title": "User",
+            "properties": {
+                "_id": {
+                    "bsonType": "objectId"
+                },
+                "username": {
+                    "bsonType": "string"
+                },
+                "password": {
+                    "bsonType": "string"
+                },
+                "salt": {
+                    "bsonType": "string"
+                },
+                "first_name": {
+                    "bsonType": "string"
+                },
+                "last_name": {
+                    "bsonType": "string"
+                },
+                "birth_date": {
+                    "bsonType": "date"
+                },
+                "avatar_url": {
+                    "bsonType": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "username",
+                "password",
+                "first_name",
+                "last_name"
+            ]
+        }
+    },
+    "validationLevel": "strict",
+    "validationAction": "error"
+});
+
+3. Create collection Course
+
+db.createCollection("Course", {
+    "capped": false,
+    "validator": {
+        "$jsonSchema": {
+            "bsonType": "object",
+            "title": "Course",
+            "properties": {
+                "_id": {
+                    "bsonType": "objectId"
+                },
+                "code": {
+                    "bsonType": "string"
+                },
+                "name": {
+                    "bsonType": "string"
+                },
+                "description": {
+                    "bsonType": "string"
+                },
+                "image_url": {
+                    "bsonType": "string"
+                },
+                "start_date": {
+                    "bsonType": "date"
+                },
+                "end_date": {
+                    "bsonType": "date"
+                },
+                "status": {
+                    "bsonType": "string",
+                    "enum": [
+                        "editing",
+                        "published",
+                        "active",
+                        "closed"
+                    ]
+                },
+                "section": {
+                    "bsonType": "object",
+                    "properties": {
+                        "section_title": {
+                            "bsonType": "string"
+                        },
+                        "resources": {
+                            "bsonType": "array",
+                            "additionalItems": true,
+                            "items": {
+                                "bsonType": "string"
+                            },
+                            "maxItems": 5,
+                            "minItems": 0
+                        },
+                        "sub_section": {
+                            "bsonType": "object",
+                            "properties": {
+                                "sub_title": {
+                                    "bsonType": "string"
+                                },
+                                "sub_resources": {
+                                    "bsonType": "array",
+                                    "additionalItems": true,
+                                    "items": {
+                                        "bsonType": "string"
+                                    },
+                                    "maxItems": 5,
+                                    "minItems": 0
+                                }
+                            },
+                            "additionalProperties": true
+                        }
+                    },
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "code",
+                "name",
+                "start_date",
+                "status"
+            ]
+        }
+    },
+    "validationLevel": "strict",
+    "validationAction": "error"
+});
+
+4. Search indexes
+
+db.Course.createIndex({ status: 1 });
+db.Course.createIndex({ code: 1 });
+db.User.createIndex({ username: 1 }, { unique: true });
+
+5. Insert User data 
+
+db.User.insertOne({
+    username: "techuser",
+    password: "password",
+    salt: "random",
+    first_name: "Tech",
+    last_name: "User",
+    birth_date: new Date("2000-01-01"),
+    avatar_url: "https://octodex.github.com/images/boxertocat_octodex.jpg"
+});
+
+6. Insert Course data 
+
+db.Course.insertOne({
+    code: "CS101",
+    name: "Intro a la Programación",
+    description: "Curso básico de programación",
+    image_url: "https://achirou.com/wp-content/uploads/2024/03/Alvaro_Chirou_Introduccion-a-la-programacion-980x551.jpg",
+    status: "editing",
+    start_date: new Date("2025-03-01"),
+    end_date: new Date("2025-06-01"),
+    section: {
+        section_title: "Unidad 1: Fundamentos",
+        resources: ["Introducción al curso"],
+        sub_section: {
+            sub_title: "Variables y Tipos de Datos",
+            sub_resources: ["https://www.youtube.com/watch?v=FI4d_EwR_MA"]
+        }
+    }
+});
+

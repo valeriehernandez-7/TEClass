@@ -1,0 +1,55 @@
+Note - Access neo4j container in docker with: docker exec -it neo4j bash
+
+1. Connect with the neo4j database. Default user (neo4j) and default password (password)
+
+    cypher-shell -u neo4j -p password
+
+2. Create the nodes and relationships
+
+    :begin
+
+    CREATE (`user`:`User` {
+        `id`: 25,
+        `user_id`: "Lorem"
+    }),
+
+    (`course`:`Course` {
+        `id`: 67,
+        `course_id`: "Lorem",
+        `status`: "editing"
+    }),
+
+    (`evaluation`:`Evaluation` {
+        `id`: 79,
+        `evaluation_id`: "Lorem"
+    }),
+
+    (`user`)-[:`FRIEND` {}]->(`user`),
+
+    (`user`)-[:`CREATED` {}]->(`course`),
+
+    (`user`)-[:`ENROLLED_IN` {}]->(`course`),
+
+    (`user`)-[:`TOOK_EVALUATION` {}]->(`evaluation`),
+
+    (`course`)-[:`HAS_EVALUATION` {}]->(`evaluation`),
+
+    (`course`)-[:`HAS_STATE` {}]->(`course`)
+    RETURN `user`,`course`,`evaluation`;
+    :commit
+
+3. Create the constraints (There is one constraint that is not available in Community Edition)
+
+    :begin
+    CREATE CONSTRAINT IF NOT EXISTS FOR (`user`:`User`) REQUIRE `user`.`user_id` IS NOT NULL;
+    CREATE CONSTRAINT IF NOT EXISTS FOR (`user`:`User`) REQUIRE `user`.`id` IS UNIQUE;
+    CREATE CONSTRAINT IF NOT EXISTS FOR (`course`:`Course`) REQUIRE `course`.`id` IS NOT NULL;
+    CREATE CONSTRAINT IF NOT EXISTS FOR (`course`:`Course`) REQUIRE `course`.`course_id` IS NOT NULL;
+    CREATE CONSTRAINT IF NOT EXISTS FOR (`course`:`Course`) REQUIRE `course`.`status` IS NOT NULL;
+    CREATE CONSTRAINT IF NOT EXISTS FOR (`course`:`Course`) REQUIRE `course`.`id` IS UNIQUE;
+    CREATE CONSTRAINT IF NOT EXISTS FOR (`evaluation`:`Evaluation`) REQUIRE `evaluation`.`id` IS NOT NULL;
+    CREATE CONSTRAINT IF NOT EXISTS FOR (`evaluation`:`Evaluation`) REQUIRE `evaluation`.`evaluation_id` IS NOT NULL;
+    CREATE CONSTRAINT IF NOT EXISTS FOR (`evaluation`:`Evaluation`) REQUIRE `evaluation`.`id` IS UNIQUE;
+    :commit
+
+

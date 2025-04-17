@@ -1,0 +1,43 @@
+Note - Access cassandra container in docker with: docker exec -it cassandra-node1 cqlsh
+
+1. Create the keyspace
+
+    CREATE KEYSPACE proyectodb2 WITH REPLICATION = {
+        'class': 'SimpleStrategy',
+        'replication_factor': 2
+    };
+
+2. Access the keyspace created
+
+    use proyectodb2;
+
+3. Create the tables
+
+    CREATE TABLE "enrollment_by_user" (
+    "user_id" text,
+    "course_id" text,
+    "enrolled_at" timestamp,
+    "evaluations" list<text>,
+    PRIMARY KEY ("user_id", "course_id")
+    )
+    WITH CLUSTERING ORDER BY ("course_id" ASC);
+
+    CREATE TABLE "evaluation_by_course" (
+    "course_id" text,
+    "evaluation_id" uuid,
+    "title" text,
+    "start_date" timestamp,
+    "end_date" timestamp,
+    PRIMARY KEY ("course_id", "evaluation_id")
+    )
+    WITH CLUSTERING ORDER BY ("evaluation_id" ASC);
+
+    CREATE TABLE "question_by_evaluation" (
+    "evaluation_id" uuid,
+    "question_id" uuid,
+    "question_text" text,
+    "options" list<text>,
+    "correct_option" int,
+    PRIMARY KEY ("evaluation_id", "question_id")
+    )
+    WITH CLUSTERING ORDER BY ("question_id" ASC);
