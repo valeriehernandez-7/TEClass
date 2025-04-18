@@ -6,6 +6,7 @@
     width: 600px;
     background: #CCC038;
     padding-bottom: 30px;
+    border-radius: 15px;
 }
 
 .header{
@@ -97,3 +98,20 @@
     font-weight: 700;
     cursor: pointer;
 }
+
+.password-input {
+    position: relative;
+}
+  
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #ffffff;
+  }
+  

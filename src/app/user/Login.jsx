@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css';
+import '../../shared/Form.css';
 
-import user_icon from '../../../assets/person.png';
-import password_icon from '../../../assets/password.png';
+import user_icon from '../../assets/person.png';
+import password_icon from '../../assets/password.png';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+import Register from './Register.jsx';
 
 const Login = () => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
   const handleLogin = async () => {
     try {
@@ -31,13 +36,12 @@ const Login = () => {
       }
 
       const user = await response.json();
-
       toast.success(`Bienvenido, ${user.first_name || user.username}!`);
 
       if (user.role === 'professor') {
-        //navigate('/admin/dashboard');
+        //navigate('/professorMenu');
       } else {
-        //navigate('/user/home');
+        //navigate('/studentMenu');
       }
 
     } catch (error) {
@@ -64,25 +68,33 @@ const Login = () => {
           />
         </div>
 
-        <div className="input">
+        <div className="input password-input">
           <img src={password_icon} alt="icono contraseña" />
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <button
+            type="button"
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
         </div>
       </div>
 
       <div className="sign-up">
-        ¿No tienes cuenta aún? <span>Registrate</span>
+        ¿No tienes cuenta aún?{' '}
+        <span onClick={() => navigate('/user')}>Registrate</span>
       </div>
 
       <div className="submit-container">
         <div className='submit' onClick={handleLogin}>Iniciar Sesión</div>
       </div>
-
+      {showRegister && <Register onClose={() => setShowRegister(false)} />}
       <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
