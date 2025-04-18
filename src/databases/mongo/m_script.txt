@@ -36,6 +36,13 @@ db.createCollection("User", {
                 },
                 "avatar_url": {
                     "bsonType": "string"
+                },
+                "role": {
+                    "bsonType": "string",
+                    "enum": [
+                        "student",
+                        "professor"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -43,7 +50,8 @@ db.createCollection("User", {
                 "username",
                 "password",
                 "first_name",
-                "last_name"
+                "last_name",
+                "role"
             ]
         }
     },
@@ -155,7 +163,19 @@ db.User.insertOne({
     first_name: "Tech",
     last_name: "User",
     birth_date: new Date("2000-01-01"),
-    avatar_url: "https://octodex.github.com/images/boxertocat_octodex.jpg"
+    avatar_url: "https://octodex.github.com/images/boxertocat_octodex.jpg",
+    role: "student",
+});
+
+db.User.insertOne({
+    username: "techuserP",
+    password: "password",
+    salt: "random",
+    first_name: "TechP",
+    last_name: "UserP",
+    birth_date: new Date("2000-01-01"),
+    avatar_url: "https://octodex.github.com/images/boxertocat_octodex.jpg",
+    role: "professor",
 });
 
 6. Insert Course data 
