@@ -1,12 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useRef, useState } from 'react';
 import '../../shared/Form.css';
+import './Register.css';
 import profile_icon from '../../assets/profile_photo.png';
 import { isPasswordValid } from '../../middlewares/passwordValidator.js';
 
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+const toBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
+});
 
 const Register = () => {
   const fileInputRef = useRef(null);
@@ -36,10 +44,22 @@ const Register = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+
     if (file) {
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        toast.error('El archivo es demasiado grande. El tamaño máximo es 10MB.');
+        return;
+      }
+      const validTypes = ['image/jpeg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        toast.error('Solo se permiten imágenes en formato JPG o PNG.');
+        return;
+      }
       setFormData((prev) => ({ ...prev, profilePicture: file }));
     }
   };
+  
 
   /* 
   This handler is used to let the user select a file.
@@ -55,22 +75,30 @@ const Register = () => {
 
   const handleRegister = async () => {
     const { username, password, firstName, lastName, birthDate, role, profilePicture } = formData;
-
+  
     if (!username || !password || !firstName || !lastName || !birthDate || !role) {
       toast.error('Por favor, complete todos los campos');
       return;
     }
-
+  
     if (!isPasswordValid(password)) {
       toast.error(
         'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial'
       );
       return;
-    }    
-
-    const avatarUrl = profilePicture
-      ? URL.createObjectURL(profilePicture)
-      : profile_icon;
+    }
+  
+    let avatarUrl = profile_icon;
+  
+    if (profilePicture) {
+      try {
+        avatarUrl = await toBase64(profilePicture);
+      } catch (error) {
+        console.error('Error al convertir la imagen:', error);
+        toast.error('No se pudo procesar la imagen');
+        return;
+      }
+    }
 
     const userToSend = {
       username,
@@ -81,7 +109,7 @@ const Register = () => {
       avatar_url: avatarUrl,
       role,
     };
-
+  
     try {
       const response = await fetch('http://localhost:4000/api/register', {
         method: 'POST',
@@ -90,13 +118,13 @@ const Register = () => {
         },
         body: JSON.stringify(userToSend),
       });
-
+  
       if (!response.ok) {
         const message = await response.text();
         toast.error(message || 'Error al registrar');
         return;
       }
-
+  
       toast.success('Registro exitoso');
       navigate('/');
     } catch (error) {
@@ -104,6 +132,7 @@ const Register = () => {
       toast.error('Ocurrió un error al conectar con el servidor');
     }
   };
+  
 
   return (
     <div className="register-container">

@@ -1,0 +1,85 @@
+/* Tags for Login.jsx */
+
+.inputs{
+    margin-top: 55px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.input{
+    display:flex;
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 80px;
+    background: #6A9689;
+    border-radius: 6px;
+}
+
+.input input::placeholder{
+    color: #ffffff;
+}
+
+.input img{
+    margin: 0px 30px;
+    filter: brightness(0) invert(1);
+}
+
+.input input{
+    height:50px;
+    width: 400px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 19px;
+}
+
+.sign-up{
+    padding-left: 62px;
+    margin-top: 27px;
+    color: #ffffff;
+    font-size: 18px;
+}
+
+.sign-up span{
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.submit-container{
+    display: flex;
+    gap: 30px;
+    margin: 60px auto;
+}
+
+.submit{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #fff;
+    background: #E53F42;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.password-input {
+    position: relative;
+}
+  
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #ffffff;
+}

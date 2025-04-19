@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../shared/Form.css';
+import './Login.css';
+import { UserContext } from '../../shared/UserSession.jsx';
 
 import user_icon from '../../assets/person.png';
 import password_icon from '../../assets/password.png';
@@ -13,6 +15,7 @@ import Register from './Register.jsx';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
 
   /* 
   This constants are used to set the initial state of the component.
@@ -48,11 +51,16 @@ const Login = () => {
       const user = await response.json();
       toast.success(`Bienvenid@, ${user.first_name || user.username}!`);
 
-      if (user.role === 'professor') {
+      // Navigate to the appropriate menu.
+
+      setUser(user);
+      navigate('/menu');
+
+      /*if (user.role === 'professor') {
         //navigate('/professorMenu');
       } else {
         //navigate('/studentMenu');
-      }
+      }*/
 
     } catch (error) {
       console.error('Login error:', error);
