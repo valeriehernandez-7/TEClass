@@ -14,10 +14,20 @@ import Register from './Register.jsx';
 const Login = () => {
   const navigate = useNavigate();
 
+  /* 
+  This constants are used to set the initial state of the component.
+  They are used to manage the state of the input fields and the visibility of the password.
+  */
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+
+  /* 
+  This function is used to handle the login process.
+  It sends a POST request to the server with the username and password.
+  */
 
   const handleLogin = async () => {
     try {
@@ -36,7 +46,7 @@ const Login = () => {
       }
 
       const user = await response.json();
-      toast.success(`Bienvenido, ${user.first_name || user.username}!`);
+      toast.success(`Bienvenid@, ${user.first_name || user.username}!`);
 
       if (user.role === 'professor') {
         //navigate('/professorMenu');

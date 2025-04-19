@@ -6,6 +6,13 @@ const { getUserById,
         validateUser
 } = require('./m_functions');
 
+/* 
+In this file, all the routes for every mongo function are made.
+A route is needed beacuse the functions are not directly accessible from the client side.
+The routes are made using express, and the functions are imported from m_functions.js.
+This routes will be used in the server.js file to create the API.
+*/
+
 router.get('/by-username/:username', async (req, res) => {
     try {
         const user = await getUserByUsername(req.params.username);

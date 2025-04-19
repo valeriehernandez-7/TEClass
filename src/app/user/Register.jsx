@@ -1,181 +1,201 @@
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import React, { useRef, useState } from 'react';
 import '../../shared/Form.css';
+import profile_icon from '../../assets/profile_photo.png';
+import { isPasswordValid } from '../../middlewares/passwordValidator.js';
 
-import user_icon from '../../assets/person.png';
-import password_icon from '../../assets/password.png';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Register = () => {
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     username: '',
     password: '',
-    first_name: '',
-    last_name: '',
-    birth_date: '',
+    firstName: '',
+    lastName: '',
+    birthDate: '',
     role: '',
-    avatar_url: null,
+    profilePicture: null,
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  /* 
+  This handler is used to set the state of the component when it changes.
+  */
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === 'avatar') {
-      setForm({ ...form, avatar: files[0] });
-    } else {
-      setForm({ ...form, [name]: value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  /* 
+  This handler is used to set the state of the image component when it changes.
+  */
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({ ...prev, profilePicture: file }));
     }
   };
 
-  const validateForm = () => {
-    const { username, password, first_name, last_name, birth_date, role } = form;
-    return username && password && first_name && last_name && birth_date && role;
+  /* 
+  This handler is used to let the user select a file.
+  */
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
   };
 
+  /* 
+  This handler verifies if all the spaces from the registration page are filled.
+  */
+
   const handleRegister = async () => {
-    if (!validateForm()) {
-      toast.warning('Por favor, completa todos los campos.');
+    const { username, password, firstName, lastName, birthDate, role, profilePicture } = formData;
+
+    if (!username || !password || !firstName || !lastName || !birthDate || !role) {
+      toast.error('Por favor, complete todos los campos');
       return;
     }
 
-    setIsSubmitting(true);
+    if (!isPasswordValid(password)) {
+      toast.error(
+        'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial'
+      );
+      return;
+    }    
+
+    const avatarUrl = profilePicture
+      ? URL.createObjectURL(profilePicture)
+      : profile_icon;
+
+    const userToSend = {
+      username,
+      password,
+      first_name: firstName,
+      last_name: lastName,
+      birth_date: birthDate,
+      avatar_url: avatarUrl,
+      role,
+    };
 
     try {
-      const formData = new FormData();
-      Object.keys(form).forEach((key) => {
-        formData.append(key, form[key]);
-      });
-
       const response = await fetch('http://localhost:4000/api/register', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userToSend),
       });
 
-      const result = await response.text();
-
-      if (response.ok) {
-        toast.success('¡Registro exitoso!');
-        setTimeout(() => {
-          navigate('/user/login');
-        }, 2000);
-      } else {
-        toast.error(result || 'Error al registrarse');
+      if (!response.ok) {
+        const message = await response.text();
+        toast.error(message || 'Error al registrar');
+        return;
       }
+
+      toast.success('Registro exitoso');
+      navigate('/');
     } catch (error) {
       console.error('Register error:', error);
       toast.error('Ocurrió un error al conectar con el servidor');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className='container'>
-      <div className="header">
-        <div className="text">Registro</div>
-        <div className="underline"></div>
-      </div>
-
-      <div className="inputs">
-        <div className="input">
-          <img src={user_icon} alt="icono usuario" />
-          <input
-            type="text"
-            name="username"
-            placeholder="Nombre de Usuario"
-            value={form.username}
-            onChange={handleChange}
-          />
+    <div className="register-container">
+      <div className="register-left">
+        <div className="register-header">
+          <div className="text">Registrarse</div>
+          <div className="underline"></div>
         </div>
 
-        <div className="input">
-          <img src={password_icon} alt="icono contraseña" />
-          <input
-            type="password"
-            name="password"
-            placeholder="Contraseña"
-            value={form.password}
-            onChange={handleChange}
-          />
-        </div>
+        <input
+          className="register-input"
+          type="text"
+          name="username"
+          placeholder="Nombre de Usuario"
+          value={formData.username}
+          onChange={handleChange}
+        />
+        <input
+          className="register-input"
+          type="password"
+          name="password"
+          placeholder="Contraseña"
+          value={formData.password}
+          onChange={handleChange}
+        />
+        <input
+          className="register-input"
+          type="text"
+          name="firstName"
+          placeholder="Nombre"
+          value={formData.firstName}
+          onChange={handleChange}
+        />
+        <input
+          className="register-input"
+          type="text"
+          name="lastName"
+          placeholder="Apellido"
+          value={formData.lastName}
+          onChange={handleChange}
+        />
+        <input
+          className="register-input"
+          type="date"
+          name="birthDate"
+          placeholder="Fecha de Nacimiento"
+          value={formData.birthDate}
+          onChange={handleChange}
+        />
+        <select
+          className="register-input"
+          name="role"
+          value={formData.role}
+          onChange={handleChange}
+        >
+          <option value="">Seleccionar Rol</option>
+          <option value="student">Estudiante</option>
+          <option value="professor">Profesor</option>
+        </select>
 
-        <div className="input">
-          <img src={user_icon} alt="icono nombre" />
-          <input
-            type="text"
-            name="first_name"
-            placeholder="Nombre"
-            value={form.first_name}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="input">
-          <img src={user_icon} alt="icono apellido" />
-          <input
-            type="text"
-            name="last_name"
-            placeholder="Apellido"
-            value={form.last_name}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="input">
-          <img src={user_icon} alt="icono fecha" />
-          <input
-            type="date"
-            name="birth_date"
-            value={form.birth_date}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="input">
-          <img src={user_icon} alt="icono rol" />
-          <select
-            name="role"
-            value={form.role}
-            onChange={handleChange}
-            style={{
-              height: '50px',
-              width: '400px',
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              color: '#ffffff',
-              fontSize: '19px',
-              appearance: 'none',
-            }}
-          >
-            <option value="" disabled>Selecciona un rol</option>
-            <option value="student">Estudiante</option>
-            <option value="professor">Profesor</option>
-          </select>
-        </div>
-
-        <div className="input">
-          <img src={user_icon} alt="icono avatar" />
-          <input
-            type="file"
-            name="avatar"
-            accept="image/*"
-            onChange={handleChange}
-          />
+        <div className="register-button-container">
+          <div className="register-button" onClick={handleRegister}>
+            Registrar
+          </div>
         </div>
       </div>
 
-      <div className="submit-container">
-        <div className='submit' onClick={handleRegister}>
-          {isSubmitting ? 'Registrando...' : 'Registrarse'}
+      <div className="register-photo-section">
+        <div className="register-photo-label">Foto de perfil</div>
+        <div className="register-photo-preview">
+          <img
+            src={
+              formData.profilePicture
+                ? URL.createObjectURL(formData.profilePicture)
+                : profile_icon
+            }
+            alt="Foto de perfil"
+            className="profile-img"
+            onClick={handleImageClick}
+            style={{ cursor: 'pointer' }}
+          />
         </div>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+        />
       </div>
 
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer />
     </div>
   );
 };
