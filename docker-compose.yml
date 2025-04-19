@@ -1,0 +1,159 @@
+services:
+  # MongoDB Cluster (2 nodes) https://hub.docker.com/_/mongo
+  teclass-mongo1:
+    image: mongo:latest
+    container_name: teclass-mongo1
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_REPLICA_SET_NAME: teclass-rs
+    command: mongod --replSet teclass-rs --bind_ip_all --auth
+    volumes:
+      - ./src/databases/mongo/data1:/data/db
+    healthcheck:       # Nuevo
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet -u root -p password || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - teclass_network
+
+  teclass-mongo2:
+    image: mongo:latest
+    container_name: teclass-mongo2
+    restart: always
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_REPLICA_SET_NAME: teclass-rs
+    command: mongod --replSet teclass-rs --bind_ip_all --auth
+    volumes:
+      - ./src/databases/mongo/data2:/data/db
+    depends_on:
+      teclass-mongo1:
+        condition: service_healthy
+    networks:
+      - teclass_network
+
+  # Mongo Express (GUI) https://hub.docker.com/_/mongo-express
+  teclass-mongo-express:
+    image: mongo-express:latest
+    container_name: teclass-mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://root:password@teclass-mongo1:27017,teclass-mongo2:27017/?replicaSet=teclass-rs
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - teclass-mongo1
+      - teclass-mongo2
+    networks:
+      - teclass_network
+
+  # Neo4j Cluster (1 node) https://hub.docker.com/_/neo4j
+  teclass-neo4j:
+    image: neo4j:latest
+    container_name: teclass-neo4j
+    restart: always
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    volumes:
+      - ./src/databases/neo4j/data:/data
+      - ./src/databases/neo4j/import:/var/lib/neo4j/import
+      - ./src/databases/neo4j/logs:/logs
+    networks:
+      - teclass_network
+
+  # Cassandra Cluster (2 nodos) https://hub.docker.com/_/cassandra
+  teclass-cassandra1:
+    image: cassandra:latest
+    container_name: teclass-cassandra1
+    restart: always
+    environment:
+      - CASSANDRA_CLUSTER_NAME=teclass-cassandra
+      - CASSANDRA_SEEDS=teclass-cassandra1,teclass-cassandra2
+      - CASSANDRA_BROADCAST_ADDRESS=teclass-cassandra1
+      - CASSANDRA_DC=dc1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_NUM_TOKENS=16
+    ports:
+      - "9042:9042"
+      - "7000:7000"
+      - "7001:7001"
+      - "7199:7199"
+    volumes:
+      - ./src/databases/cassandra/data1:/var/lib/cassandra
+    networks:
+      - teclass_network
+
+  teclass-cassandra2:
+    image: cassandra:latest
+    container_name: teclass-cassandra2
+    restart: always
+    environment:
+      - CASSANDRA_CLUSTER_NAME=teclass-cassandra
+      - CASSANDRA_SEEDS=teclass-cassandra1,teclass-cassandra2
+      - CASSANDRA_BROADCAST_ADDRESS=teclass-cassandra2
+      - CASSANDRA_DC=dc1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_NUM_TOKENS=16
+    volumes:
+      - ./src/databases/cassandra/data2:/var/lib/cassandra
+    depends_on:
+      - teclass-cassandra1
+    networks:
+      - teclass_network
+
+  # Redis Cluster (2 nodos) https://hub.docker.com/_/redis
+  teclass-redis1:
+    image: redis:latest
+    container_name: teclass-redis1
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./src/databases/redis/data1:/data
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    networks:
+      - teclass_network
+
+  teclass-redis2:
+    image: redis:latest
+    container_name: teclass-redis2
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./src/databases/redis/data2:/data
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    depends_on:
+      - teclass-redis1
+    networks:
+      - teclass_network
+
+  # RedisInsight (GUI oficial) https://hub.docker.com/r/redis/redisinsight
+  teclass-redisinsight:
+    image: redis/redisinsight:latest
+    container_name: teclass-redisinsight
+    restart: always
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./src/databases/redis/redisinsight:/db
+    networks:
+      - teclass_network
+
+networks:
+  teclass_network:
+    driver: bridge
