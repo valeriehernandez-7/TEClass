@@ -5,9 +5,12 @@ import './Register.css';
 import profile_icon from '../../assets/profile_photo.png';
 import { isPasswordValid } from '../../middlewares/passwordValidator.js';
 
-
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+import { Eye, EyeOff } from 'lucide-react';
+
+/* Manage the file upload by the user */
 
 const toBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -19,6 +22,7 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
 const Register = () => {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -150,14 +154,24 @@ const Register = () => {
           value={formData.username}
           onChange={handleChange}
         />
-        <input
-          className="register-input"
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={handleChange}
-        />
+
+        <div className="password-wrapper">
+          <input
+            className="register-input"
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            placeholder="Contraseña"
+            value={formData.password}
+            onChange={handleChange}
+          />
+          <span
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </span>
+        </div>
+
         <input
           className="register-input"
           type="text"

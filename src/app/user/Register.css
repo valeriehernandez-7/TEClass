@@ -83,14 +83,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .register-photo-preview {
     width: 150px;
     height: 150px;
-    background-color: rgba(255, 255, 255, 0.1); /* más suave */
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid #ffffff33; /* borde semitransparente */
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2); /* glow suave */
+    border: 2px solid #ffffff33;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
   
 .register-photo-preview img {
@@ -99,4 +99,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     object-fit: cover;
     transition: transform 0.3s ease;
     cursor: pointer;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
 }
