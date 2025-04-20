@@ -131,10 +131,22 @@ async function updateUser(newData, userId) {
     };
 }
 
+/* 
+This function returns all users stored in the database,
+excluding the password and salt fields.
+It is used to show the list of users in the search user window.
+*/
+
+async function getAllUsers() {
+    const { db } = await connectMongo();
+    return await db.collection('User').find({}).project({ password: 0, salt: 0, birth_date: 0 }).toArray();
+}
+
 module.exports = {
     getUserById,
     getUserByUsername,
     registerUser,
     validateUser,
-    updateUser
+    updateUser,
+    getAllUsers
 };

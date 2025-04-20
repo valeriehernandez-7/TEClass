@@ -1,0 +1,118 @@
+.sch-main-wrapper {
+  background-color: #CCC038;
+  padding: 30px;
+  margin: 40px auto;
+  max-width: 900px;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.sch-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+}
+
+.sch-header-compact {
+  margin-top: 2px;
+  margin-bottom: 5px;
+}
+
+.sch-search-input::placeholder{
+  color: #ffffff;
+}
+
+.sch-search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sch-search-input {
+  width: 300px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 14px;
+}
+
+.sch-search-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background-color: #E53F42;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sch-user-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.sch-user-header-row,
+.sch-user-row {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.sch-user-header-row {
+  font-weight: bold;
+  background-color: transparent;
+}
+
+.sch-user-row {
+  background-color: #C4DAD2;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.sch-user-avatar,
+.sch-user-avatar-header {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.sch-user-username,
+.sch-user-name {
+  flex: 1;
+  padding: 0 10px;
+}
+
+.sch-user-action {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sch-add-action {
+  width: 100px;
+}
+
+.sch-message-action {
+  width: 100px;
+}
+
+.sch-action-icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.sch-action-icon:hover {
+  transform: scale(1.1);
+}

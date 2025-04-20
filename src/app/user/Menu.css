@@ -2,7 +2,7 @@
 
 .menu-container {
     font-family: 'Segoe UI', sans-serif;
-    height: 110vh;
+    height: 120vh;
     display: flex;
     flex-direction: column;
 }
@@ -81,7 +81,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-   
 }
   
 .welcome h2 {

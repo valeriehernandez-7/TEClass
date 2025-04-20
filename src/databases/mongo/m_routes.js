@@ -4,7 +4,8 @@ const { getUserById,
         getUserByUsername, 
         registerUser,
         validateUser,
-        updateUser 
+        updateUser,
+        getAllUsers 
 } = require('./m_functions');
 
 /* 
@@ -68,6 +69,17 @@ router.put('/update/:id', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('Failed to update user');
+    }
+});
+
+router.get('/all-users', async (req, res) => {
+    try {
+        const users = await getAllUsers();
+        if (!users || users.length === 0) return res.status(404).send('Users not found');
+        res.json(users);
+    } catch (err) {
+        console.error('Error getting users:', err);
+        res.status(500).send('Server error');
     }
 });
 
