@@ -1,11 +1,12 @@
 const connectMongo = require('./m_connection');
 const crypto = require('crypto');
+const { ObjectId } = require('mongodb');
 
 /* This function gets an user from the db, searching it by id. */
 
-async function getUserById(id) {
+async function getUserById(userId) {
     const { db } = await connectMongo();
-    return await db.collection('User').findOne({ id });
+    return await db.collection('User').findOne({ _id: new ObjectId(userId) });
 }
 
 /* This function gets an user from the db, searching it by username. */
@@ -76,10 +77,11 @@ async function validateUser(username, plainPassword) {
     const hashed = hashPassword(plainPassword, user.salt);
     if (hashed === user.password) {
         return {
-            id: user.id,
+            id: user._id,
             username: user.username,
             first_name: user.first_name,
             last_name: user.last_name,
+            birth_date: user.birth_date,
             avatar_url: user.avatar_url,
             role: user.role
         };
@@ -87,9 +89,52 @@ async function validateUser(username, plainPassword) {
     return null;
 }
 
+/* 
+This function uses id to update the user info in the db.
+It is used when the user wants to edit his profile.
+*/
+
+async function updateUser(newData, userId) {
+    const { db } = await connectMongo();
+    const user = await getUserById(userId);
+    if (!user) return null;
+
+    const updatedFields = {};
+
+    if (newData.first_name) updatedFields.first_name = newData.first_name;
+    if (newData.last_name) updatedFields.last_name = newData.last_name;
+    if (newData.avatar_url) updatedFields.avatar_url = newData.avatar_url;
+    if (newData.birth_date) updatedFields.birth_date = new Date(newData.birth_date);
+
+    if (newData.password) {
+        const salt = generateSalt();
+        const hashedPassword = hashPassword(newData.password, salt);
+        updatedFields.password = hashedPassword;
+        updatedFields.salt = salt;
+    }
+
+    await db.collection('User').updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: updatedFields }
+    );  
+
+    const updatedUser = await getUserById(userId);
+
+    return {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        first_name: updatedUser.first_name,
+        last_name: updatedUser.last_name,
+        avatar_url: updatedUser.avatar_url,
+        birth_date: updatedUser.birth_date,
+        role: updatedUser.role
+    };
+}
+
 module.exports = {
     getUserById,
     getUserByUsername,
     registerUser,
-    validateUser
+    validateUser,
+    updateUser
 };

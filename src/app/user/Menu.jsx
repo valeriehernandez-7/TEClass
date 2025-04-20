@@ -5,10 +5,12 @@ import '../../shared/Form.css';
 import './Menu.css';
 import profile_icon from '../../assets/profile_photo.png';
 
+/* The tabs are created and also their navigate path */
+
 const menuItems = {
   'Cursos': [
-    { label: 'Crear curso', path: '/courses/create' },
-    { label: 'Seccionar curso', path: '/courses/section' },
+    { label: 'Crear curso', path: '/courses/create', restrictedTo: 'professor' },
+    { label: 'Seccionar curso', path: '/courses/section', restrictedTo: 'professor' },
     { label: 'Ver cursos', path: '/courses/view' },
   ],
   'Mis Cursos': [
@@ -29,13 +31,23 @@ const menuItems = {
 };
 
 const Menu = () => {
-  const { user, clearUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [activeDropdown, setActiveDropdown] = useState(null);
 
+  /* Restricted some of the tab's opctions for students */
+  
+  const filteredMenuItems = Object.keys(menuItems).reduce((acc, tab) => {
+    acc[tab] = menuItems[tab].filter(item => {
+      return !item.restrictedTo || item.restrictedTo !== 'professor' || user?.role === 'professor';
+    });
+    return acc;
+  }, {});
+
+  /* The path of the tabs is managed */
+
   const handleOptionClick = (item) => {
     if (item.path === 'logout') {
-      clearUser();
       navigate('/');
     } else {
       navigate(item.path);
@@ -58,7 +70,7 @@ const Menu = () => {
               {tab}
               {activeDropdown === tab && (
                 <div className="dropdown">
-                  {menuItems[tab].map((item) => (
+                  {filteredMenuItems[tab].map((item) => (
                     <div
                       key={item.label}
                       className="dropdown-item"

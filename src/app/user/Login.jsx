@@ -56,12 +56,6 @@ const Login = () => {
       setUser(user);
       navigate('/menu');
 
-      /*if (user.role === 'professor') {
-        //navigate('/professorMenu');
-      } else {
-        //navigate('/studentMenu');
-      }*/
-
     } catch (error) {
       console.error('Login error:', error);
       toast.error('Ocurrió un error al conectar con el servidor');

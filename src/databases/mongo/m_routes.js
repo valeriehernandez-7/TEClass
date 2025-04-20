@@ -3,7 +3,8 @@ const router = express.Router();
 const { getUserById, 
         getUserByUsername, 
         registerUser,
-        validateUser
+        validateUser,
+        updateUser 
 } = require('./m_functions');
 
 /* 
@@ -54,6 +55,19 @@ router.post('/login', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
+    }
+});
+
+router.put('/update/:id', async (req, res) => {
+    const userId = req.params.id;
+    const newData = req.body;
+    try {
+        const updatedUser = await updateUser(newData, userId);
+        if (!updatedUser) return res.status(404).send('User not found');
+        res.json(updatedUser);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to update user');
     }
 });
 
