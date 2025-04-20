@@ -66,7 +66,6 @@ const EditProfile = () => {
       toast.error('Por favor, completa todos los campos obligatorios.');
       return;
     }
-    console.log('Validando contraseña...:', password);
     if (password){
       if (!isPasswordValid(password)) {
         toast.error(
