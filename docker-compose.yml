@@ -13,7 +13,7 @@ services:
     command: mongod --replSet teclass-rs --bind_ip_all --auth
     volumes:
       - ./src/databases/mongo/data1:/data/db
-    healthcheck:       # Nuevo
+    healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh --quiet -u root -p password || exit 1
       interval: 10s
       timeout: 10s
@@ -22,7 +22,7 @@ services:
       - teclass_network
 
   teclass-mongo2:
-    image: mongo:latest
+    image: mongo:6.0
     container_name: teclass-mongo2
     restart: always
     ports:
@@ -34,15 +34,46 @@ services:
     command: mongod --replSet teclass-rs --bind_ip_all --auth
     volumes:
       - ./src/databases/mongo/data2:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet -u root -p password || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
     depends_on:
       teclass-mongo1:
         condition: service_healthy
     networks:
       - teclass_network
 
+  # Mongo Init (Auto replica set)
+  mongo-init:
+    image: mongo:latest
+    container_name: mongo-init
+    depends_on:
+      teclass-mongo1:
+        condition: service_healthy
+      teclass-mongo2:
+        condition: service_healthy
+    command: >
+      bash -c "
+      until mongosh --host teclass-mongo1 -u root -p password --eval 'print(\"waited for connection\")' >/dev/null 2>&1; do
+        sleep 2
+      done &&
+      mongosh --host teclass-mongo1 -u root -p password --eval '
+        rs.initiate({
+          _id: \"teclass-rs\",
+          members: [
+            {_id: 0, host: \"teclass-mongo1:27017\"},
+            {_id: 1, host: \"teclass-mongo2:27017\"}
+          ]
+        })'
+      "
+    networks:
+      - teclass_network
+
   # Mongo Express (GUI) https://hub.docker.com/_/mongo-express
   teclass-mongo-express:
-    image: mongo-express:latest
+    image: mongo-express:1.0
     container_name: teclass-mongo-express
     restart: always
     ports:
@@ -53,12 +84,11 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:password@teclass-mongo1:27017,teclass-mongo2:27017/?replicaSet=teclass-rs
       ME_CONFIG_BASICAUTH: false
     depends_on:
-      - teclass-mongo1
-      - teclass-mongo2
+      - mongo-init
     networks:
       - teclass_network
 
-  # Neo4j Cluster (1 node) https://hub.docker.com/_/neo4j
+  # Neo4j (1 node) https://hub.docker.com/_/neo4j
   teclass-neo4j:
     image: neo4j:latest
     container_name: teclass-neo4j
@@ -68,10 +98,16 @@ services:
       - "7687:7687"
     environment:
       - NEO4J_AUTH=neo4j/password
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
     volumes:
       - ./src/databases/neo4j/data:/data
       - ./src/databases/neo4j/import:/var/lib/neo4j/import
       - ./src/databases/neo4j/logs:/logs
+    healthcheck:
+      test: cypher-shell -u neo4j -p password 'RETURN 1' || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 5
     networks:
       - teclass_network
 
@@ -87,6 +123,7 @@ services:
       - CASSANDRA_DC=dc1
       - CASSANDRA_RACK=rack1
       - CASSANDRA_NUM_TOKENS=16
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
     ports:
       - "9042:9042"
       - "7000:7000"
@@ -94,6 +131,11 @@ services:
       - "7199:7199"
     volumes:
       - ./src/databases/cassandra/data1:/var/lib/cassandra
+    healthcheck:
+      test: cqlsh -u cassandra -p cassandra -e "DESCRIBE KEYSPACES" || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 5
     networks:
       - teclass_network
 
@@ -108,8 +150,14 @@ services:
       - CASSANDRA_DC=dc1
       - CASSANDRA_RACK=rack1
       - CASSANDRA_NUM_TOKENS=16
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
     volumes:
       - ./src/databases/cassandra/data2:/var/lib/cassandra
+    healthcheck:
+      test: cqlsh -u cassandra -p cassandra -e "DESCRIBE KEYSPACES" || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 5
     depends_on:
       - teclass-cassandra1
     networks:
@@ -125,6 +173,11 @@ services:
     volumes:
       - ./src/databases/redis/data1:/data
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - teclass_network
 
@@ -137,8 +190,29 @@ services:
     volumes:
       - ./src/databases/redis/data2:/data
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
       - teclass-redis1
+    networks:
+      - teclass_network
+
+  # Redis Cluster Init (Configura el cluster automáticamente)
+  redis-cluster-init:
+    image: redis:latest
+    container_name: redis-cluster-init
+    depends_on:
+      teclass-redis1:
+        condition: service_healthy
+      teclass-redis2:
+        condition: service_healthy
+    command: >
+      bash -c "
+      echo 'yes' | redis-cli --cluster create teclass-redis1:6379 teclass-redis2:6379 --cluster-replicas 0
+      "
     networks:
       - teclass_network
 
@@ -151,6 +225,8 @@ services:
       - "8001:8001"
     volumes:
       - ./src/databases/redis/redisinsight:/db
+    depends_on:
+      - redis-cluster-init
     networks:
       - teclass_network
 
