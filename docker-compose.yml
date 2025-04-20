@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # MongoDB Cluster (2 nodes) https://hub.docker.com/_/mongo
   teclass-mongo1:
@@ -22,7 +24,7 @@ services:
       - teclass_network
 
   teclass-mongo2:
-    image: mongo:6.0
+    image: mongo:latest
     container_name: teclass-mongo2
     restart: always
     ports:
