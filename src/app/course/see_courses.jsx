@@ -37,7 +37,7 @@ const SeeCourses = () => {
   
     const fetchCourses = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/getAllCourses');
+        const res = await fetch('http://localhost:4000/api/mongo/getAllCourses');
         console.log('Response:', res); // Log the response object
         if (res.ok) {
         const data = await res.json();

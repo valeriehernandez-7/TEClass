@@ -120,7 +120,7 @@ const NewCourse = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:4000/api/NewCourse', {
+      const response = await fetch('http://localhost:4000/api/mongo/NewCourse', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ const NewCourse = () => {
       }
 
       toast.success('Curso Insertado!');
-      navigate('/');
+      navigate('/menu');
     } catch (error) {
       console.error('Register error:', error);
       toast.error('Ocurrió un error al conectar con el servidor');

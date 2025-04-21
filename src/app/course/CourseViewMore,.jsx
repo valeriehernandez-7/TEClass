@@ -48,7 +48,7 @@ const ViewMore = () => {
     const fetchCourse = async () => {
         try {
             console.log('Fetching course with ID:', id); // Log the course ID being fetched
-            const res = await fetch(`http://localhost:4000/api/getCourseById/${id}`);
+            const res = await fetch(`http://localhost:4000/api/mongo/getCourseById/${id}`);
             console.log('Response:', res); // Log the response object
             if (res.ok) {
                 const data = await res.json();
