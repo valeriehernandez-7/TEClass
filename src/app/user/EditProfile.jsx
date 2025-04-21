@@ -94,7 +94,7 @@ const EditProfile = () => {
       avatar_url: finalAvatarUrl,
     };
     try {
-      const response = await fetch(`http://localhost:4000/api/update/${user.id}`, {
+      const response = await fetch(`http://localhost:4000/api/mongo/update/${user.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

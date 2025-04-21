@@ -34,7 +34,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/login', {
+      const response = await fetch('http://localhost:4000/api/mongo/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

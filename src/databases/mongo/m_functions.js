@@ -137,9 +137,13 @@ excluding the password and salt fields.
 It is used to show the list of users in the search user window.
 */
 
-async function getAllUsers() {
+async function getAllUsers(currentUserId) {
     const { db } = await connectMongo();
-    return await db.collection('User').find({}).project({ password: 0, salt: 0, birth_date: 0 }).toArray();
+    return await db
+        .collection('User')
+        .find({ _id: { $ne: new ObjectId(currentUserId) } }) // excluye al usuario actual
+        .project({ password: 0, salt: 0, birth_date: 0 })     // excluye campos sensibles
+        .toArray();
 }
 
 module.exports = {

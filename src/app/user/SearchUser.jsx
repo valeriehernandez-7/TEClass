@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useContext } from 'react';
+import { UserContext } from '../../shared/UserSession';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import '../../shared/Form.css';
 import './SearchUser.css';
 
@@ -13,10 +19,11 @@ const SearchUser = () => {
   const [searchInput, setSearchInput] = useState('');
   const [searchResult, setSearchResult] = useState(null);
   const navigate = useNavigate();
-
+  const { user } = useContext(UserContext);
+  
   const fetchAllUsers = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/all-users');
+      const response = await fetch(`http://localhost:4000/api/mongo/all-users?currentUserId=${user.id}`);
       const data = await response.json();
       setUsers(data);
       setSearchResult(null);
@@ -27,7 +34,7 @@ const SearchUser = () => {
 
   const getByUsername = async (username) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/by-username/${username}`);
+      const response = await fetch(`http://localhost:4000/api/mongo/by-username/${username}`);
       if (response.ok) {
         const user = await response.json();
         setSearchResult(user);
@@ -52,9 +59,37 @@ const SearchUser = () => {
     }
   };
 
-  const handleAddFriend = (username) => {
-    console.log(`Agregar amigo: ${username}`);
-  };
+  const handleAddFriend = async (toUserId) => {
+    if (!user) {
+      toast.warn('Debes iniciar sesión para agregar amigos');
+      return;
+    }
+    
+    try {
+      const response = await fetch('http://localhost:4000/api/neo4j/send-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fromId: user.id,
+          toId: toUserId
+        }),
+      });
+      
+      const result = await response.json();
+      if (response.ok) {
+        toast.success(result.message || 'Solicitud de amistad enviada');
+      } else if (response.status === 409) {
+        toast.info(result.message);
+      } else {
+        toast.error(result.message || 'No se pudo enviar la solicitud');
+      }
+    } catch (error) {
+      console.error('Error al enviar la solicitud:', error);
+      toast.error('Error de conexión con el servidor');
+    }
+  };      
 
   const handleMessage = (username) => {
     navigate('/chat');
@@ -74,7 +109,7 @@ const SearchUser = () => {
           src={friend_request}
           alt="Agregar amigo"
           className="sch-action-icon"
-          onClick={() => handleAddFriend(user.username)}
+          onClick={() => handleAddFriend(user._id)}
         />
       </div>
       <div className="sch-user-action sch-message-action">
@@ -82,7 +117,7 @@ const SearchUser = () => {
           src={send_message}
           alt="Enviar mensaje"
           className="sch-action-icon"
-          onClick={() => handleMessage(user.username)}
+          onClick={() => handleMessage(user._id)}
         />
       </div>
     </div>
@@ -123,6 +158,7 @@ const SearchUser = () => {
             : users.map((user) => renderUser(user))}
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

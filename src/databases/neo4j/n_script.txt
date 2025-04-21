@@ -8,35 +8,50 @@ Note - Access neo4j container in docker with: docker exec -it neo4j bash
 
     :begin
 
-    CREATE (`user`:`User` {
-        `id`: 25,
-        `user_id`: "Lorem"
-    }),
+CREATE (`user`:`User` {
+	`id`: 25,
+	`user_id`: "Lorem"
+}),
 
-    (`course`:`Course` {
-        `id`: 67,
-        `course_id`: "Lorem",
-        `status`: "editing"
-    }),
+(`course`:`Course` {
+	`id`: 67,
+	`course_id`: "Lorem",
+	`status`: "editing"
+}),
 
-    (`evaluation`:`Evaluation` {
-        `id`: 79,
-        `evaluation_id`: "Lorem"
-    }),
+(`evaluation`:`Evaluation` {
+	`id`: 79,
+	`evaluation_id`: "Lorem"
+}),
 
-    (`user`)-[:`FRIEND` {}]->(`user`),
+(`user`)-[:`FRIEND` {}]->(`user`),
 
-    (`user`)-[:`CREATED` {}]->(`course`),
+(`user`)-[:`CREATED` {}]->(`course`),
 
-    (`user`)-[:`ENROLLED_IN` {}]->(`course`),
+(`user`)-[:`ENROLLED_IN` {}]->(`course`),
 
-    (`user`)-[:`TOOK_EVALUATION` {}]->(`evaluation`),
+(`user`)-[:`TOOK_EVALUATION` {}]->(`evaluation`),
 
-    (`course`)-[:`HAS_EVALUATION` {}]->(`evaluation`),
+(`user`)-[:`SEND_REQUEST` {}]->(`user`),
 
-    (`course`)-[:`HAS_STATE` {}]->(`course`)
-    RETURN `user`,`course`,`evaluation`;
-    :commit
+(`course`)-[:`HAS_EVALUATION` {}]->(`evaluation`),
+
+(`course`)-[:`HAS_STATE` {}]->(`course`)
+ RETURN `user`,`course`,`evaluation`;
+:commit
+
+
+:begin
+CREATE CONSTRAINT IF NOT EXISTS FOR (`user`:`User`) REQUIRE `user`.`user_id` IS NOT NULL;
+CREATE CONSTRAINT IF NOT EXISTS FOR (`user`:`User`) REQUIRE `user`.`id` IS UNIQUE;
+CREATE CONSTRAINT IF NOT EXISTS FOR (`course`:`Course`) REQUIRE `course`.`id` IS NOT NULL;
+CREATE CONSTRAINT IF NOT EXISTS FOR (`course`:`Course`) REQUIRE `course`.`course_id` IS NOT NULL;
+CREATE CONSTRAINT IF NOT EXISTS FOR (`course`:`Course`) REQUIRE `course`.`status` IS NOT NULL;
+CREATE CONSTRAINT IF NOT EXISTS FOR (`course`:`Course`) REQUIRE `course`.`id` IS UNIQUE;
+CREATE CONSTRAINT IF NOT EXISTS FOR (`evaluation`:`Evaluation`) REQUIRE `evaluation`.`id` IS NOT NULL;
+CREATE CONSTRAINT IF NOT EXISTS FOR (`evaluation`:`Evaluation`) REQUIRE `evaluation`.`evaluation_id` IS NOT NULL;
+CREATE CONSTRAINT IF NOT EXISTS FOR (`evaluation`:`Evaluation`) REQUIRE `evaluation`.`id` IS UNIQUE;
+:commit
 
 3. Create the constraints (There is one constraint that is not available in Community Edition)
 
