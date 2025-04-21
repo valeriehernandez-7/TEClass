@@ -4,6 +4,8 @@ const { getUserById,
         getUserByUsername, 
         registerUser,
         validateUser,
+        updateUser,
+        getAllUsers,
         NewCourse,
         getAllCourses,
         getCourseById,
@@ -47,7 +49,6 @@ router.post('/register', async (req, res) => {
     }
 });
 
-
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -61,6 +62,39 @@ router.post('/login', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+router.put('/update/:id', async (req, res) => {
+    const userId = req.params.id;
+    const newData = req.body;
+    try {
+        const updatedUser = await updateUser(newData, userId);
+        if (!updatedUser) return res.status(404).send('User not found');
+        res.json(updatedUser);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to update user');
+    }
+});
+
+router.get('/all-users', async (req, res) => {
+    const { currentUserId } = req.query;
+  
+    if (!currentUserId) {
+        return res.status(400).json({ success: false, message: 'Missing current user ID' });
+    }
+  
+    try {
+        const users = await getAllUsers(currentUserId);
+        if (!users || users.length === 0) {
+            return res.status(404).json({ success: false, message: 'Users not found' });
+        }
+        res.json(users);
+    } catch (err) {
+        console.error('Error getting users:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 
 //Course routes
 
@@ -106,6 +140,4 @@ router.update('/InsertSection', async (req, res) => {
     }
 });
 
-
-
-module.exports = router
+module.exports = router;
