@@ -8,7 +8,7 @@ import EditProfile from './app/user/EditProfile.jsx';
 import SearchUser from './app/user/SearchUser.jsx';
 import Friends from './app/user/Friends.jsx';
 import NewCourse from './app/course/new_course.jsx';
-import Menu from './app/user/Menu.jsx';
+
 import CourseList from './app/course/see_courses.jsx';
 import CourseViewMore from './app/course/CourseViewMore,.jsx';
 import CourseSection from './app/course/section_course.jsx';

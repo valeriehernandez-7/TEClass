@@ -9,8 +9,8 @@ import profile_icon from '../../assets/profile_photo.png';
 
 const menuItems = {
   'Cursos': [
-    { label: 'Crear curso', path: '/courses/create', restrictedTo: 'professor' },
-    { label: 'Ver cursos', path: '/courses/view' },
+    { label: 'Crear curso', path: '/NewCourse', restrictedTo: 'professor' },
+    { label: 'Ver cursos', path: '/See_Courses' },
   ],
   'Mis Cursos': [
     { label: 'Cursos matriculados', path: '/my-courses/enrolled' },

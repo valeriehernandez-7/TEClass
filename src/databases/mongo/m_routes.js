@@ -130,7 +130,7 @@ router.get('/getCourseById/:id', async (req, res) => {
     }
 });
 
-router.update('/InsertSection', async (req, res) => {
+router.put('/InsertSection', async (req, res) => {
     try {
         const result = await insertSection(req.body);
         res.status(201).json(result);
