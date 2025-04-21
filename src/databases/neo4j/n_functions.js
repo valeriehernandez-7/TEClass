@@ -58,6 +58,9 @@ async function checkRequestRelationship(userId1, userId2) {
     }
 }
 
+/* This function verifies the relationships: SEND_REQUEST and FRIEND
+between two users and sends a request */
+
 async function sendRequest(senderMongoId, receiverMongoId) {
     const areFriends = await checkFriendRelationship(senderMongoId, receiverMongoId);
     if (areFriends) {
@@ -99,8 +102,128 @@ async function sendRequest(senderMongoId, receiverMongoId) {
     }
 }
 
+/* Function that deletes a SEND_REQUEST relationship between two users */
+
+async function eliminateRequest(userId1, userId2) {
+    const { session } = getNeo4jSession();
+
+    try {
+        const id1 = userId1.toString();
+        const id2 = userId2.toString();
+
+        const result = await session.run(
+            `
+            MATCH (u1:User {user_id: $id1})-[r:SEND_REQUEST]->(u2:User {user_id: $id2})
+            DELETE r
+            RETURN COUNT(r) AS deletedCount
+            `,
+            { id1, id2 }
+        );
+
+        const deletedCount = result.records[0]?.get('deletedCount').toInt();
+
+        if (deletedCount > 0) {
+            return { success: true, message: 'Request deleted successfully.' };
+        } else {
+            return { success: false, message: 'No SEND_REQUEST relationship found.' };
+        }
+
+    } catch (error) {
+        console.error('Error deleting SEND_REQUEST relationship:', error);
+        return { success: false, message: 'Internal error.' };
+    } finally {
+        await session.close();
+    }
+}
+
+/* Function that creates a FRIEND relationship and deletes any existing SEND_REQUEST */
+
+async function makeFriends(userId1, userId2) {
+    const { session } = getNeo4jSession();
+
+    try {
+        const id1 = userId1.toString();
+        const id2 = userId2.toString();
+
+        const result = await session.run(
+            `
+            MATCH (u1:User {user_id: $id1})
+            MATCH (u2:User {user_id: $id2})
+            MERGE (u1)-[:FRIEND]->(u2)
+            MERGE (u2)-[:FRIEND]->(u1)
+            RETURN u1, u2
+            `,
+            { id1, id2 }
+        );
+
+        if (result.records.length === 0) {
+            return { success: false, message: 'Failed to create friendship.' };
+        }
+
+        /* Delete the SEND_REQUEST if it exists. It goes from id2 to id1, because
+        when the user accept the request, the order is inverted. */
+        const eliminationResult = await eliminateRequest(id2, id1);
+        return { success: true, message: 'Users are now friends.', elimination: eliminationResult };
+
+    } catch (error) {
+        console.error('Error creating FRIEND relationship:', error);
+        return { success: false, message: 'Internal error.' };
+    } finally {
+        await session.close();
+    }
+}
+
+/* Function that retrieves the IDs of friends of a user */
+
+async function getRelatedUserIds(userId) {
+    const { session } = getNeo4jSession();
+  
+    try {
+      const result = await session.run(
+        `
+        MATCH (u:User {user_id: $userId})-[:FRIEND]-(friend:User)
+        RETURN friend.user_id AS friendId
+        `,
+        { userId }
+    );
+        return result.records.map(record => record.get('friendId'));
+    } catch (error) {
+        console.error('Error getting related user IDs from Neo4j:', error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+}  
+
+/*This function returns a list of user IDs that the given user has sent friend requests to.
+The relationship searched is SEND_REQUEST. */
+
+async function getRequestedUserIds(userId) {
+    const { session } = getNeo4jSession();
+  
+    try {
+        const result = await session.run(
+            `
+            MATCH (requested:User)-[:SEND_REQUEST]->(u:User {user_id: $userId})
+            RETURN requested.user_id AS requestedId
+            `,
+            { userId }
+        );
+        return result.records.map(r => r.get('requestedId'));
+    } catch (error) {
+        console.error('Error getting sender user IDs from Neo4j:', error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+}  
+
 module.exports = {
     checkFriendRelationship,
     checkRequestRelationship,
-    sendRequest
+    sendRequest,
+    eliminateRequest,
+    makeFriends,
+    getRelatedUserIds,
+    getRequestedUserIds
 };

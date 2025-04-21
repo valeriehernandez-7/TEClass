@@ -1,9 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { sendRequest,
-        checkFriendRelationship,
-        checkRequestRelationship 
+const {
+  sendRequest,
+  checkFriendRelationship,
+  checkRequestRelationship,
+  eliminateRequest,
+  makeFriends,
+  getRelatedUserIds,
+  getRequestedUserIds
 } = require('./n_functions');
+
+const { getUserDetailsByIds } = require('../mongo/m_functions');
 
 /* This route receives two Mongo IDs (sender and receiver)
 and use the function checkFriendRelationship. */
@@ -58,7 +65,6 @@ router.post('/send-request', async (req, res) => {
 
     if (!result.success) {
       const { message } = result;
-      console.log('Result:', result);
       if (message === 'Users are already friends.' || message === 'Request already sent.') {
         return res.status(409).json(result);
       }
@@ -69,6 +75,88 @@ router.post('/send-request', async (req, res) => {
     res.status(201).json(result);
   } catch (err) {
     console.error('Error in /send-request route:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+/* This route receives two Mongo IDs and creates a FRIEND relationship using makeFriends */
+
+router.post('/make-friends', async (req, res) => {
+  const { userId1, userId2 } = req.body;
+
+  if (!userId1 || !userId2) {
+    return res.status(400).json({ success: false, message: 'Missing user IDs' });
+  }
+
+  try {
+    const result = await makeFriends(userId1, userId2);
+    if (result.success) {
+      return res.status(201).json(result);
+    }
+    return res.status(400).json(result);
+  } catch (err) {
+    console.error('Error in /make-friends route:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+/* This route receives two Mongo IDs and deletes a SEND_REQUEST using eliminateRequest */
+
+router.delete('/eliminate-request', async (req, res) => {
+  const { fromId, toId } = req.body;
+
+  if (!fromId || !toId) {
+    return res.status(400).json({ success: false, message: 'Missing sender or receiver ID' });
+  }
+
+  try {
+    const result = await eliminateRequest(fromId, toId);
+    if (result.success) {
+      return res.status(200).json(result);
+    }
+    return res.status(404).json(result);
+  } catch (err) {
+    console.error('Error in /eliminate-request route:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+/* This router calls two functions: getRelatedUserIds from Neo4j
+and getUserDetailsByIds from Mongo. Retrieves the user's information that
+have a FRIEND relationship with the user in session. */
+
+router.get('/friends-info/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const relatedIds = await getRelatedUserIds(userId);
+    if (relatedIds.length === 0) {
+      return res.status(200).json({ success: true, users: [] });
+    }
+
+    const users = await getUserDetailsByIds(relatedIds);
+    res.status(200).json({ success: true, users });
+  } catch (err) {
+    console.error('Error in /friends-info route:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+/* This router calls two functions: getRequestedUserIds from Neo4j
+and getUserDetailsByIds from Mongo. Retrieves the user's information that
+have a SEND_REQUEST relationship with the user in session. */
+
+router.get('/sent-requests-info/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const requestedIds = await getRequestedUserIds(userId);
+    if (requestedIds.length === 0) {
+      return res.status(200).json({ success: true, users: [] });
+    }
+
+    const users = await getUserDetailsByIds(requestedIds);
+    res.status(200).json({ success: true, users });
+  } catch (err) {
+    console.error('Error in /sent-requests-info route:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });

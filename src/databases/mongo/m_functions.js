@@ -146,11 +146,25 @@ async function getAllUsers(currentUserId) {
         .toArray();
 }
 
+/* This funtion returns the information from a list with user's id */
+
+async function getUserDetailsByIds(ids) {
+    const { db } = await connectMongo();
+    const objectIds = ids.map(id => new ObjectId(id));
+  
+    return await db
+      .collection('User')
+      .find({ _id: { $in: objectIds } })
+      .project({ username: 1, first_name: 1, last_name: 1, avatar_url: 1, role: 1 })
+      .toArray();
+}
+
 module.exports = {
     getUserById,
     getUserByUsername,
     registerUser,
     validateUser,
     updateUser,
-    getAllUsers
+    getAllUsers,
+    getUserDetailsByIds
 };

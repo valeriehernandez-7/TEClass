@@ -10,7 +10,6 @@ import profile_icon from '../../assets/profile_photo.png';
 const menuItems = {
   'Cursos': [
     { label: 'Crear curso', path: '/courses/create', restrictedTo: 'professor' },
-    { label: 'Seccionar curso', path: '/courses/section', restrictedTo: 'professor' },
     { label: 'Ver cursos', path: '/courses/view' },
   ],
   'Mis Cursos': [

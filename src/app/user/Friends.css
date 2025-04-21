@@ -1,0 +1,100 @@
+.f-main-wrapper {
+    background-color: #CCC038;
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 1000px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+  
+.f-container {
+    padding: 20px;
+    max-width: 960px;
+    margin: auto;
+}
+  
+.f-header {
+    margin-bottom: 20px;
+}
+  
+.f-columns {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+  
+.f-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+  
+.f-subtitle {
+    margin-bottom: 10px;
+    text-align: center;
+}
+  
+.f-user-list {
+    max-height: 380px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 8px;
+    background-color: #f9f9f9;
+}
+  
+.f-user-row {
+    display: flex;
+    align-items: center;
+    background-color: #C4DAD2;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+}
+  
+.f-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+  
+.f-username,
+.f-name {
+    flex: 1;
+    padding: 0 5px;
+    font-size: 14px;
+}
+  
+.f-action {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.f-accept,
+.f-reject,
+.f-message {
+    width: 30px;
+    margin-left: 6px;
+}
+  
+.f-action-icon {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+  
+.f-action-icon:hover {
+    transform: scale(1.1);
+}
+  
+.f-empty {
+    text-align: center;
+    padding: 20px;
+    color: #555;
+    font-style: italic;
+}
+  
