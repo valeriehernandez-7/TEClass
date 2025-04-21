@@ -1,0 +1,89 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+    networks:
+      - project_network
+
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j
+    restart: always
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - project_network
+
+  cassandra-node1:
+    image: cassandra:4.1.4
+    container_name: cassandra-node1
+    restart: always
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra-node1
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra_node1:/var/lib/cassandra
+    networks:
+      - project_network
+
+  cassandra-node2:
+    image: cassandra:4.1.4
+    container_name: cassandra-node2
+    restart: always
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+      - CASSANDRA_SEEDS=cassandra-node1
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra-node2
+    volumes:
+      - cassandra_node2:/var/lib/cassandra
+    networks:
+      - project_network
+
+  redis-master:
+    image: redis:7.2.1
+    container_name: redis-master
+    restart: always
+    volumes:
+      - redis_master:/data
+    ports:
+      - 6379:6379
+    networks:
+      - project_network
+
+  redis-slave:
+    image: redis:7.2.1
+    container_name: redis-slave
+    restart: always
+    volumes:
+      - redis_slave:/data
+    ports:
+      - 6479:6379
+    command: redis-server --replicaof redis-master 6379
+    networks:
+      - project_network
+
+networks:
+  project_network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  neo4j_data:
+  cassandra_node1:
+  cassandra_node2:
+  redis_master:
+  redis_slave:
