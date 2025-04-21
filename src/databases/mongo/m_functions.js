@@ -125,9 +125,11 @@ async function getCourseByCode(code) {
     return await db.collection('Course').findOne({ code });
 }
 
+const { ObjectId } = require('mongodb');
+
 async function getCourseById(id) {
     const { db } = await connectMongo();
-    return await db.collection('Course').findOne({ id });
+    return await db.collection('Course').findOne({ _id: new ObjectId(id) });
 }
 
 async function getCourseByName(name) {
@@ -150,5 +152,6 @@ module.exports = {
     registerUser,
     validateUser,
     NewCourse,
-    getAllCourses
+    getAllCourses,
+    getCourseById
 };

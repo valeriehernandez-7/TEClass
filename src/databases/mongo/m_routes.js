@@ -5,7 +5,8 @@ const { getUserById,
         registerUser,
         validateUser,
         NewCourse,
-        getAllCourses
+        getAllCourses,
+        getCourseById
 } = require('./m_functions');
 
 /* 
@@ -81,6 +82,17 @@ router.get('/getAllCourses', async (req, res) => {
         console.error(err);
         res.status(500).send('Failed to fetch courses');
     }       
+});
+
+router.get('/getCourseById/:id', async (req, res) => {
+    try {
+        const course = await getCourseById(req.params.id);
+        if (!course) return res.status(404).send('Course not found');
+        res.json(course);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
 });
 
 module.exports = router

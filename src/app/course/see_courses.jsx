@@ -152,8 +152,8 @@ const SeeCourses = () => {
               <p><strong>Fecha Final:</strong> {course.end_date}</p>
             </div>
             <div className="course-buttons">
-              <button onClick={() => handleSectionCourse(course._id)}>Seccionar Curso</button>
-              <button onClick={() => handleViewMore(course._id)}>Ver más</button>
+              <button onClick={() => navigate(`/courseViewMore/${course._id}`)}>Seccionar Curso</button>
+              <button onClick={() => navigate(`/courseViewMore/${course._id}`)}>Ver más</button>
             </div>
           </div>
         ))

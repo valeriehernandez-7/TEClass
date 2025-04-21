@@ -49,7 +49,7 @@ const NewCourse = () => {
     description: '',
     ImageUrl: null,
     start_date: '',
-    end_date: '',
+    end_date: null,
     status: '',
     section: {},
   });
@@ -90,12 +90,15 @@ const NewCourse = () => {
 
     const { code, name, description, start_date, end_date, section } = formData;
 
-    if (!code || !name || !description || !start_date || !end_date ) {
+    if (!code || !name || !description || !start_date ) {
       toast.error('Por favor, complete todos los campos');
       return;
     }
 
+    
     let image_url;
+
+
 
     if (formData.ImageUrl) {
       image_url = await toBase64(formData.ImageUrl);
