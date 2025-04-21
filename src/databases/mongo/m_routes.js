@@ -6,7 +6,8 @@ const { getUserById,
         validateUser,
         NewCourse,
         getAllCourses,
-        getCourseById
+        getCourseById,
+        insertSection,
 } = require('./m_functions');
 
 /* 
@@ -94,5 +95,17 @@ router.get('/getCourseById/:id', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+router.update('/InsertSection', async (req, res) => {
+    try {
+        const result = await insertSection(req.body);
+        res.status(201).json(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to add section');
+    }
+});
+
+
 
 module.exports = router

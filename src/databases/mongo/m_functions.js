@@ -142,7 +142,21 @@ async function getAllCourses() {
     return await db.collection('Course').find({}).toArray();
 }
 
+async function insertSection(courseId, section) {
+    const { db } = await connectMongo();
+    return await db.collection('Course').updateOne(
+        { _id: new ObjectId(courseId) },
+        { $set: { section } }
+    );
+}
 
+async function insertsubsection(courseId, subsection) {
+    const { db } = await connectMongo();
+    return await db.collection('Course').updateOne(
+        { _id: new ObjectId(courseId) },
+        { $set: { subsection } }
+    );
+}
 
 
 
@@ -153,5 +167,6 @@ module.exports = {
     validateUser,
     NewCourse,
     getAllCourses,
-    getCourseById
+    getCourseById,
+    insertSection
 };
