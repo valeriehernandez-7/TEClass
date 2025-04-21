@@ -7,9 +7,8 @@ import './Menu.css';
 
 const menuItems = {
   'Cursos': [
-    { label: 'Crear curso', path: '/courses/create' },
-    { label: 'Seccionar curso', path: '/courses/section' },
-    { label: 'Ver cursos', path: '/courses/view' },
+    { label: 'Crear curso', path: '/NewCourse' },
+    { label: 'Ver cursos', path: '/See_Courses' },
   ],
   'Mis Cursos': [
     { label: 'Cursos matriculados', path: '/my-courses/enrolled' },

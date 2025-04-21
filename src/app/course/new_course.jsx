@@ -7,9 +7,40 @@ import  defaultImagePath from '../../assets/course_default_img.png'; // Import t
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const toBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
+});
+
+const menuItems = {
+  'Cursos': [
+    { label: 'Crear curso', path: '/NewCourse' },
+    { label: 'Ver cursos', path: '/See_Courses' },
+  ],
+  'Mis Cursos': [
+    { label: 'Cursos matriculados', path: '/my-courses/enrolled' },
+    { label: 'Matricular cursos', path: '/my-courses/enroll' },
+  ],
+  'Amigos': [
+    { label: 'Buscar usuario', path: '/friends/search' },
+    { label: 'Ver amigos', path: '/friends/list' },
+  ],
+  'Evaluaciones': [
+    { label: 'Ver Evaluaciones', path: '/evaluations' }
+  ],
+  'Perfil': [
+    { label: 'Editar perfil', path: '/profile/edit' },
+    { label: 'Cerrar sesión', path: 'logout' },
+  ],
+};
+
 const NewCourse = () => {
   const navigate = useNavigate();
+  const { user, clearUser } = '';;
   const [showDropdown, setShowDropdown] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
    // relative to public folder
   const [imagePreview, setImagePreview] = useState(defaultImagePath);
   const [formData, setFormData] = useState({
@@ -23,9 +54,30 @@ const NewCourse = () => {
     section: {},
   });
 
+    
+  const handleOptionClick = (item) => {
+    if (item.path === 'logout') {
+      clearUser();
+      navigate('/');
+    } else {
+      navigate(item.path);
+    }
+    setActiveDropdown(null);
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        toast.error('El archivo es demasiado grande. El tamaño máximo es 10MB.');
+        return;
+      }
+      const validTypes = ['image/jpeg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        toast.error('Solo se permiten imágenes en formato JPG o PNG.');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
@@ -36,9 +88,9 @@ const NewCourse = () => {
   const handleNewCourse = async (e) => {
     e.preventDefault(); // Prevent form reload
 
-    const { code, name, description, ImageUrl, start_date, end_date, status, section } = formData;
+    const { code, name, description, start_date, end_date, section } = formData;
 
-    if (!code || !name || !description || !start_date || !end_date || !status) {
+    if (!code || !name || !description || !start_date || !end_date ) {
       toast.error('Por favor, complete todos los campos');
       return;
     }
@@ -46,11 +98,13 @@ const NewCourse = () => {
     let image_url;
 
     if (formData.ImageUrl) {
-      image_url = URL.createObjectURL(formData.ImageUrl);
-      } else {
-        image_url = '/assets/course_default_img.png'; // Default image path
+      image_url = await toBase64(formData.ImageUrl);
+    } else {
+      // Fetch the default image and convert to base64
+      const response = await fetch(defaultImagePath);
+      const blob = await response.blob();
+      image_url = await toBase64(blob);
     }
-
     const CourseToSend = {
       code,
       name,
@@ -58,7 +112,7 @@ const NewCourse = () => {
       image_url,
       start_date,
       end_date,
-      status,
+      status : "editing",
       section,
     };
 
@@ -89,17 +143,31 @@ const NewCourse = () => {
     <div className="menu-container">
       <ToastContainer />
       <header className="menu-header">
-        <div className="tabs">
-          <div className="tab" onClick={() => setShowDropdown(!showDropdown)}>
-            Opciones ▾
-            {showDropdown && (
-              <div className="dropdown">
-                <div className="dropdown-item">Item 1</div>
-                <div className="dropdown-item">Item 2</div>
-                <div className="dropdown-item">Item 3</div>
-              </div>
-            )}
-          </div>
+      <div className="tabs">
+          {Object.keys(menuItems).map((tab) => (
+            <div
+              key={tab}
+              className="tab"
+              onClick={() =>
+                setActiveDropdown(activeDropdown === tab ? null : tab)
+              }
+            >
+              {tab}
+              {activeDropdown === tab && (
+                <div className="dropdown">
+                  {menuItems[tab].map((item) => (
+                    <div
+                      key={item.label}
+                      className="dropdown-item"
+                      onClick={() => handleOptionClick(item)}
+                    >
+                      {item.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
         <div className="user-info">
           <img
@@ -176,20 +244,7 @@ const NewCourse = () => {
               />
             </label>
 
-            <label>
-              Estado:
-              <select
-                name="status"
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              >
-                <option value="">-- Seleccionar --</option>
-                <option value="editing">editing</option>
-                <option value="published">published</option>
-                <option value="active">active</option>
-                <option value="closed">closed</option>
-              </select>
-            </label>
+            
 
             <button type="submit">Guardar</button>
           </form>

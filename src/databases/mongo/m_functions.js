@@ -120,11 +120,35 @@ async function NewCourse(CourseData) {
     };
 }
 
+async function getCourseByCode(code) {
+    const { db } = await connectMongo();
+    return await db.collection('Course').findOne({ code });
+}
+
+async function getCourseById(id) {
+    const { db } = await connectMongo();
+    return await db.collection('Course').findOne({ id });
+}
+
+async function getCourseByName(name) {
+    const { db } = await connectMongo();
+    return await db.collection('Course').findOne({ name });
+}
+
+async function getAllCourses() {
+    const { db } = await connectMongo();
+    return await db.collection('Course').find({}).toArray();
+}
+
+
+
+
 
 module.exports = {
     getUserById,
     getUserByUsername,
     registerUser,
     validateUser,
-    NewCourse
+    NewCourse,
+    getAllCourses
 };

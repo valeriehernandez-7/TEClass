@@ -4,7 +4,8 @@ const { getUserById,
         getUserByUsername, 
         registerUser,
         validateUser,
-        NewCourse
+        NewCourse,
+        getAllCourses
 } = require('./m_functions');
 
 /* 
@@ -44,6 +45,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
+
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -70,5 +72,15 @@ router.post('/NewCourse', async (req, res) => {
     }
 });
 
+router.get('/getAllCourses', async (req, res) => {
+    try {
+        const courses = await getAllCourses();
+        res.status(200).json(courses);
+        
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to fetch courses');
+    }       
+});
 
 module.exports = router
