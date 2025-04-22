@@ -1,0 +1,16 @@
+.courses-container {
+    padding: 1rem;
+  }
+  
+  .fila {
+    display: flex;
+    justify-content: space-between;
+    background-color: #eee;
+    padding: 10px;
+    margin: 5px 0;
+  }
+ 
+  .mensaje {
+    padding: 1rem;
+    font-weight: bold;
+  }
