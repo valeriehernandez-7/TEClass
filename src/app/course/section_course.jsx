@@ -11,6 +11,7 @@ import './section_course.css';
 
 
 
+
 const menuItems = {
     'Cursos': [
       { label: 'Crear curso', path: '/NewCourse' },
@@ -42,11 +43,19 @@ const menuItems = {
     const [newSubTitle, setNewSubTitle] = useState('');
     const [subResources, setSubResources] = useState(['']);
     const [sections, setSections] = useState([]);
-    const [course, setCourse] = useState({});
-    const [selectedSection, setSelectedSection] = useState('');
+    const [course, setCourse] = useState([]);
+    
     const [newSubInput, setNewSubInput] = useState('');
     const [activeDropdown, setActiveDropdown] = useState(null);
     const { user, clearUser } = '';
+
+    const [selectedSection, setSelectedSection] = useState('');
+    const [newSubsection, setNewSubsection] = useState('');
+    const [resource, setResource] = useState('');
+    const [subResource, setSubResource] = useState('');
+    const [sectionResources, setSectionResources] = useState('');
+    const [newSectionTitle, setNewSectionTitle] = useState('');
+
     const navigate = useNavigate();
   
     const handleOptionClick = (item) => {
@@ -67,7 +76,8 @@ const menuItems = {
             if (res.ok) {
                 const data = await res.json();
                 setCourse(data);
-                console.log('Course data:', course);
+                console.log('Course data:', data.name);
+                console.log ('Course section:', course.section);
             } else {
                 console.error('Error fetching course:', res.statusText);
             }
@@ -82,11 +92,12 @@ const menuItems = {
         fetchCourse();
       if (course.section) {
         setSections([course.section]);
+        console.log('Sections:', sections); // Log the sections
       }
     }, [id]);
     
     const [status, setStatus] = useState(course.status);
-
+    console.log('Course status:', status); // Log the course status
     const handleUpdateStatus = () => {
       console.log('Updating status to:', status);
       // Send to backend logic here
@@ -121,7 +132,21 @@ const menuItems = {
       console.log(`Adding subsection "${newSubInput}" to section "${selectedSection}"`);
       // Send to backend logic here
     };
+    
+    const handleAddSection = () => {
+      // Send request to add section
+    };
   
+   
+  
+    const handleAddResourceToSection = () => {
+      // Send request to add resource to section
+    };
+  
+    const handleAddResourceToSubsection = () => {
+      // Send request to add resource to subsection
+    };
+
     const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
   
     return (
@@ -164,46 +189,85 @@ const menuItems = {
                 </div>
               </header>
   
-        <div className="course-form-container">
-          <h2>Editar Curso</h2>
-  
-          <div className="course-info-block">
-            <p><strong>Código:</strong> {course.code}</p>
-            <p><strong>Nombre:</strong> {course.name}</p>
-            <p><strong>Estado:</strong>
-              <select value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="editing">Editing</option>
-                <option value="published">Published</option>
-                <option value="active">Active</option>
-                <option value="closed">Closed</option>
-              </select>
-              <button onClick={handleUpdateStatus}>Actualizar Estado</button>
-            </p>
-            <p><strong>Inicio:</strong> {formatDate(course.start_date)}</p>
-            <p><strong>Fin:</strong> {formatDate(course.end_date)}</p>
-          </div>
-  
-          <div className="section-form">
-            <h3>Agregar Nueva Sección</h3>
-            <input type="text" placeholder="Título de la sección" value={newSection} onChange={(e) => setNewSection(e.target.value)} />
-            <input type="text" placeholder="Recurso 1" onChange={(e) => updateResource(0, e)} />
-            <input type="text" placeholder="Recurso 2" onChange={(e) => updateResource(1, e)} />
-            <input type="text" placeholder="Subtítulo subsección" value={newSubTitle} onChange={(e) => setNewSubTitle(e.target.value)} />
-            <input type="text" placeholder="Sub-recurso 1" onChange={(e) => updateSubResource(0, e)} />
-            <button onClick={handleUploadSection}>Subir Sección</button>
-          </div>
-  
-          <div className="subsection-form">
-            <h3>Agregar Subsección a Sección Existente</h3>
-            <select onChange={(e) => setSelectedSection(e.target.value)}>
-              <option value="">Selecciona una sección</option>
-              {sections.map((sec, idx) => (
-                <option key={idx} value={sec.section_title}>{sec.section_title}</option>
-              ))}
-            </select>
-            <input type="text" placeholder="Nueva subsección" value={newSubInput} onChange={(e) => setNewSubInput(e.target.value)} />
-            <button onClick={handleAddSubsection}>Agregar Subsección</button>
-          </div>
+              <div className="course-detail-container">
+        <h2>{course.name}</h2>
+        <p><strong>Código:</strong> {course.code}</p>
+        <p><strong>Estado:</strong> {course.status}</p>
+        <p><strong>Inicio:</strong> {new Date(course.start_date).toLocaleDateString()}</p>
+        <p><strong>Fin:</strong> {new Date(course.end_date).toLocaleDateString()}</p>
+
+        <div className="form-group">
+          <label htmlFor="status">Actualizar estado del curso</label>
+          <select value={status} onChange={e => setStatus(e.target.value)}>
+            <option value="editing">Editing</option>
+            <option value="published">Published</option>
+            <option value="active">Active</option>
+            <option value="closed">Closed</option>
+          </select>
+          <button onClick={handleUpdateStatus}>Actualizar estado</button>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="section-title">Agregar nueva sección</label>
+          <input
+            type="text"
+            placeholder="Título de la sección"
+            value={newSectionTitle}
+            onChange={e => setNewSectionTitle(e.target.value)}
+          />
+          <button onClick={handleAddSection}>Agregar sección</button>
+        </div>
+
+        <div className="form-group">
+          <label>Agregar subsección a sección existente</label>
+          <select onChange={e => setSelectedSection(e.target.value)} value={selectedSection}>
+            <option value="">Selecciona una sección</option>
+            {sections.map((section, idx) => (
+              <option key={idx} value={section.section_title}>{section.section_title}</option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="Título de la subsección"
+            value={newSubsection}
+            onChange={e => setNewSubsection(e.target.value)}
+          />
+          <button onClick={handleAddSubsection}>Agregar subsección</button>
+        </div>
+
+        <div className="form-group">
+          <label>Agregar recurso a sección</label>
+          <select onChange={e => setSelectedSection(e.target.value)} value={selectedSection}>
+            <option value="">Selecciona una sección</option>
+            {sections.map((section, idx) => (
+              <option key={idx} value={section.section_title}>{section.section_title}</option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="Recurso para sección"
+            value={sectionResources}
+            onChange={e => setSectionResources(e.target.value)}
+          />
+          <button onClick={handleAddResourceToSection}>Agregar recurso</button>
+        </div>
+
+        <div className="form-group">
+          <label>Agregar recurso a subsección</label>
+          <select onChange={e => setSelectedSection(e.target.value)} value={selectedSection}>
+            <option value="">Selecciona una sección</option>
+            {sections.map((section, idx) => (
+              <option key={idx} value={section.section_title}>{section.section_title}</option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="Recurso para subsección"
+            value={subResource}
+            onChange={e => setSubResource(e.target.value)}
+          />
+          <button onClick={handleAddResourceToSubsection}>Agregar recurso a subsección</button>
+        </div>
         </div>
       </div>
     );

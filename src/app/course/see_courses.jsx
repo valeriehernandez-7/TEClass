@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './see_courses.css';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-
+import { View } from 'lucide-react' ;
 
 const menuItems = {
   'Cursos': [
@@ -129,6 +129,13 @@ const SeeCourses = () => {
           </header>
 
     <div className="course-list-container">
+    <div className='search-area button'>
+        <button className='view-button' onClick={() => navigate(-1)}>
+          <View className='view-icon' /> Volver
+        </button>
+
+        </div>
+        
       <div className="search-area">
         <input
           type="text"

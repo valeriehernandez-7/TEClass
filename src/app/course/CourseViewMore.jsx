@@ -109,6 +109,14 @@ const ViewMore = () => {
                         </div>
                       </header>
     <div className="page-wrapper">
+
+      <div className='search-area button'>
+              <button className='view-button' onClick={() => navigate(-1)}>
+                <View className='view-icon' /> Volver
+              </button>
+      
+            </div>
+
       <h2>{course.name}</h2>
       <p><strong>Código:</strong> {course.code}</p>
       <p><strong>Descripción:</strong> {course.description}</p>

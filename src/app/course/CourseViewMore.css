@@ -70,3 +70,13 @@
   padding: 70px;
   box-sizing: content-box;
   }
+
+  .search-area button {
+    background-color: #937E0A;
+    color: white;
+    border: none;
+    padding: 8px 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }

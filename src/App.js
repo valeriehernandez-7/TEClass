@@ -10,8 +10,9 @@ import Friends from './app/user/Friends.jsx';
 import NewCourse from './app/course/new_course.jsx';
 
 import CourseList from './app/course/see_courses.jsx';
-import CourseViewMore from './app/course/CourseViewMore,.jsx';
+import CourseViewMore from './app/course/CourseViewMorePROFESSOR.jsx';
 import CourseSection from './app/course/section_course.jsx';
+import CloneCourse  from './app/course/CloneCourse.jsx';
 function App() {
   return (
     <Router>
@@ -26,6 +27,7 @@ function App() {
         <Route path="/See_Courses" element={<CourseList/>}/>
         <Route path="/courseViewMore/:id" element={<CourseViewMore/>}/>
         <Route path="/courseSection/:id" element={<CourseSection/>}/>
+        <Route path="/CloneCourse/:id" element={<CloneCourse/>}/>
       </Routes>
     </Router>
   );
