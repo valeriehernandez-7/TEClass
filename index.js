@@ -5,6 +5,9 @@ const app = express();
 const cursosRouter = require('./src/databases/cassandra/cursos');
 const matricularRouter = require('./src/databases/cassandra/matricular');
 const connectCassandra = require('./src/databases/cassandra/cassandra');
+const chatRouter = require('./src/databases/redis/chat');
+
+app.use('/chat', chatRouter);
 
 app.use(cors());
 app.use(express.json());

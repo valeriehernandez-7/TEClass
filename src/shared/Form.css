@@ -229,4 +229,41 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .matriculado {
     color: #8AC926;
     font-weight: bold;
-  }
+}
+
+.chat-mensajes {
+    margin-top: 30px;
+    background: #ffffffcc;
+    border-radius: 10px;
+    padding: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+  
+.chat-burbuja {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    color: #333;
+    font-size: 16px;
+    background-color: #f5f5f5;
+    word-wrap: break-word;
+}
+  
+.chat-derecha {
+    align-self: flex-end;
+    background-color: #8AC926;
+    color: rgb(255, 255, 255);
+}
+  
+.chat-izquierda {
+    align-self: flex-start;
+    background-color: #6A9689;
+    color: white;
+}
