@@ -151,6 +151,6 @@ db.createCollection("Course", {
 4. Search indexes
 
 db.Course.createIndex({ status: 1 });
-db.Course.createIndex({ code: 1 });
+db.Course.createIndex({ code: 1 }, { unique: true });
 db.User.createIndex({ username: 1 }, { unique: true });
 
