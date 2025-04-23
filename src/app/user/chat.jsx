@@ -10,12 +10,13 @@ const Chat = ({ fromId, toId }) => {
     const obtenerMensajes = async () => {
       try {
         const res = await axios.get(`http://localhost:3001/chat/${fromId}/${toId}`);
-        setMensajes(Object.values(res.data));
+        const mensajesOrdenados = res.data.sort((a, b) => a.timestamp - b.timestamp);
+        setMensajes(mensajesOrdenados);
       } catch (err) {
         console.error('Error al obtener mensajes:', err);
       }
     };
-
+  
     obtenerMensajes();
     const intervalo = setInterval(obtenerMensajes, 3000);
     return () => clearInterval(intervalo);
@@ -25,9 +26,9 @@ const Chat = ({ fromId, toId }) => {
     if (!mensaje.trim()) return;
     try {
       await axios.post('http://localhost:3001/chat', {
-        fromId,
-        toId,
-        mensaje,
+        from_id: fromId,
+        to_id: toId,
+        message: mensaje,
       });
       setMensaje('');
     } catch (err) {

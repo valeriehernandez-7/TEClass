@@ -7,12 +7,11 @@ const matricularRouter = require('./src/databases/cassandra/matricular');
 const connectCassandra = require('./src/databases/cassandra/cassandra');
 const chatRouter = require('./src/databases/redis/chat');
 
-app.use('/chat', chatRouter);
-
 app.use(cors());
 app.use(express.json());
 
-// Rutas
+app.use('/chat', chatRouter);
+
 app.use('/cursos', cursosRouter);
 app.use('/matricular', matricularRouter);
 

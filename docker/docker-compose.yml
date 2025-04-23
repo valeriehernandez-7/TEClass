@@ -7,6 +7,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+
     networks:
       - project_network
 
@@ -25,7 +26,7 @@ services:
       - project_network
 
   cassandra-node1:
-    image: cassandra:4.1
+    image: cassandra:4.1.4
     container_name: cassandra-node1
     restart: always
     environment:
@@ -40,7 +41,7 @@ services:
       - project_network
 
   cassandra-node2:
-    image: cassandra:4.1
+    image: cassandra:4.1.4
     container_name: cassandra-node2
     restart: always
     environment:
@@ -52,59 +53,28 @@ services:
     networks:
       - project_network
 
-  redis-node-1:
-    image: redis:7
-    container_name: redis-node-1
+  redis-master:
+    image: redis:7.2.1
+    container_name: redis-master
+    restart: always
+    volumes:
+      - redis_master:/data
     ports:
-      - "7001:7001"
-      - "17001:17001"
-    command: >
-      redis-server --port 7001
-                   --cluster-enabled yes
-                   --cluster-config-file nodes.conf
-                   --cluster-node-timeout 5000
-                   --appendonly yes
-                   --cluster-announce-ip redis-node-1
-                   --cluster-announce-port 7001
-                   --cluster-announce-bus-port 17001
-    networks:
-      - project_network 
-
-  redis-node-2:
-    image: redis:7
-    container_name: redis-node-2
-    ports:
-      - "7002:7002"
-      - "17002:17002"
-    command: >
-      redis-server --port 7002
-                   --cluster-enabled yes
-                   --cluster-config-file nodes.conf
-                   --cluster-node-timeout 5000
-                   --appendonly yes
-                   --cluster-announce-ip redis-node-2
-                   --cluster-announce-port 7002
-                   --cluster-announce-bus-port 17002
+      - 6379:6379
     networks:
       - project_network
 
-  redis-node-3:
-    image: redis:7
-    container_name: redis-node-3
+  redis-slave:
+    image: redis:7.2.1
+    container_name: redis-slave
+    restart: always
+    volumes:
+      - redis_slave:/data
     ports:
-      - "7003:7003"
-      - "17003:17003"
-    command: >
-      redis-server --port 7003
-                   --cluster-enabled yes
-                   --cluster-config-file nodes.conf
-                   --cluster-node-timeout 5000
-                   --appendonly yes
-                   --cluster-announce-ip redis-node-3
-                   --cluster-announce-port 7003
-                   --cluster-announce-bus-port 17003
+      - 6479:6379
+    command: redis-server --replicaof redis-master 6379
     networks:
-      - project_network 
+      - project_network
 
 networks:
   project_network:
@@ -115,10 +85,5 @@ volumes:
   neo4j_data:
   cassandra_node1:
   cassandra_node2:
-  redis_node_1:
-  redis_node_2:
-  redis_node_3:
-
-# ******************************************** IMPORTANTE ***********************************************
-# Ejecutar para el cluster de Redis: docker exec -it redis-node-1 sh
-# Seguido: redis-cli --cluster create redis-node-1:7001 redis-node-2:7002 redis-node-3:7003 --cluster-replicas 0
+  redis_master:
+  redis_slave:
