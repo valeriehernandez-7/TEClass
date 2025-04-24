@@ -1,123 +1,103 @@
-import React, { useEffect, useState } from 'react';
-import './EnrolledIn_Courses.css';
+import React, { useEffect, useState, useContext } from 'react';
+import './see_courses.css';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import { View } from 'lucide-react';
+import { UserContext } from '../../shared/UserSession';
 
-const menuItems = {
-  'Cursos': [
-    { label: 'Crear curso', path: '/NewCourse' },
-    { label: 'Ver cursos', path: '/See_Courses' },
-  ],
-  'Mis Cursos': [
-    { label: 'Cursos matriculados', path: '/my-courses/enrolled' },
-    { label: 'Matricular cursos', path: '/my-courses/enroll' },
-  ],
-  'Amigos': [
-    { label: 'Buscar usuario', path: '/friends/search' },
-    { label: 'Ver amigos', path: '/friends/list' },
-  ],
-  'Evaluaciones': [
-    { label: 'Ver Evaluaciones', path: '/evaluations' }
-  ],
-  'Perfil': [
-    { label: 'Editar perfil', path: '/profile/edit' },
-    { label: 'Cerrar sesión', path: 'logout' },
-  ],
-};
-
-const EnrolledIn_Courses = () => {
-  const [courses, setCourses] = useState([]);
-  const [activeDropdown, setActiveDropdown] = useState(null);
+const SeeEnrolledCourses = () => {
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
+
+  const fetchEnrolledCourseIds = async () => {
+    try {
+      const res = await fetch(`http://localhost:4000/api/neo4j/getCodigosCursosMatriculados/${user.id}`);
+      if (!res.ok) throw new Error('Failed to get enrolled course IDs from Neo4j');
+      console.log('Response:', res); // Log the response object
+    
+      const  courseIds  = await res.json(); // Expecting { courseIds: ["abc123", "def456"] }
+      console.log('Fetched course IDs:', courseIds); // Log the fetched course IDs
+      return courseIds;
+    } catch (error) {
+      console.error('Error fetching enrolled course IDs:', error);
+      return [];
+    }
+  };
+
+  const fetchCoursesFromMongo = async (courseIds) => {
+    try {
+      const response = await fetch('http://localhost:4000/api/mongo/getCoursesByIds', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: courseIds }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses from MongoDB');
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching courses from MongoDB:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await fetch(`http://localhost:4000/api/neo4j/getCodigosCursosMatriculados?userId=${user.id}`);
-        const data = await res.json();
-        setCourses(data);
-        console.log(user.id);
-        console.log(data);
-        console.log('Fetched courses:', data);
-      } catch (error) {
-        toast.error('Error al obtener los cursos.');
+    const loadCourses = async () => {
+      const courseIds = await fetchEnrolledCourseIds();
+      if (courseIds.length > 0) {
+        await fetchCoursesFromMongo(courseIds);
       }
     };
-    fetchCourses();
-  }, [user.id]);
 
-  const handleOptionClick = (item) => {
-    if (item.path === 'logout') {
-      localStorage.removeItem('user');
-      navigate('/');
-    } else {
-      navigate(item.path);
-    }
-    setActiveDropdown(null);
-  };
+    if (user?.id) loadCourses();
+  }, [user]);
 
   return (
     <div className="menu-container">
       <ToastContainer />
       <header className="menu-header">
         <div className="tabs">
-          {Object.keys(menuItems).map((tab) => (
-            <div
-              key={tab}
-              className="tab"
-              onClick={() => setActiveDropdown(activeDropdown === tab ? null : tab)}
-            >
-              {tab}
-              {activeDropdown === tab && (
-                <div className="dropdown">
-                  {menuItems[tab].map((item) => (
-                    <div
-                      key={item.label}
-                      className="dropdown-item"
-                      onClick={() => handleOptionClick(item)}
-                    >
-                      {item.label}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+          <div className="tab" onClick={() => navigate(-1)}>
+            <View className="view-icon" /> Volver
+          </div>
         </div>
         <div className="user-info">
-          <img
-            className="avatar"
-            src="https://via.placeholder.com/45"
-            alt="User Avatar"
-            title="Perfil"
-          />
+          <img className="avatar" src="https://via.placeholder.com/45" alt="User Avatar" title="Perfil" />
         </div>
       </header>
 
-      <div className="main-container">
-        <h1 className="titulo">Mis Cursos</h1>
-
-          <div className="encabezado">
-            <div>Código de curso</div>
-            <div>Nombre del curso</div>
-            <div>Fecha de inicio</div>
+      <div className="course-list-container">
+        <h2>Cursos Matriculados</h2>
+        <div className="courses-wrapper">
+          <div className="course-dropdown">
+            {enrolledCourses.length > 0 ? (
+              enrolledCourses.map((course) => (
+                <div className="course-card" key={course._id || course.code}>
+                  <img src={course.image_url} alt="Course" className="course-image" />
+                  <div className="course-info">
+                    <p><strong>Código:</strong> {course.code}</p>
+                    <p><strong>Nombre:</strong> {course.name}</p>
+                    <p><strong>Fecha de Inicio:</strong> {course.start_date}</p>
+                    <p><strong>Fecha Final:</strong> {course.end_date}</p>
+                  </div>
+                  <div className="course-buttons">
+                    <button onClick={() => navigate(`/courseViewMore/${course._id}`)}>Ver más</button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="no-results">No estás matriculado en ningún curso.</p>
+            )}
           </div>
-
-          {courses.length === 0 ? (
-            <p className="mensaje">No hay cursos para mostrar.</p>
-          ) : (
-            courses.map((curso, index) => (
-              <div className="fila" key={index}>
-                <div>{curso.codigo}</div>
-                <div>{curso.nombre}</div>
-                <div>{curso.fecha}</div>
-              </div>
-            ))
-          )}
         </div>
       </div>
+    </div>
   );
 };
 
-export default EnrolledIn_Courses;
+export default SeeEnrolledCourses;

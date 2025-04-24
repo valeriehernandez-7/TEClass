@@ -275,6 +275,13 @@ async function getCursosCreados(userId) {
   }
   
 
+  async function getCoursesbyId(coursesId){
+    const { db } = await connectMongo();
+    const objectIds = coursesId.map(id => new ObjectId(id));
+  
+    return await db.collection('Course').find({ _id: { $in: objectIds } }).toArray();
+  }
+
 module.exports = {
     getUserById,
     getUserByUsername,
@@ -289,5 +296,6 @@ module.exports = {
     insertSection,
     getCursosCreados,
     getCursosMatriculados,
-    getEstudiantesDelCurso
+    getEstudiantesDelCurso,
+    getCoursesbyId,
 };

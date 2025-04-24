@@ -56,7 +56,7 @@ const SeeCourses = () => {
     };
     const handleEnrollCourse = async (courseId) => {
       try {
-        const res = await fetch(`http://localhost:4000/api/neo4j/EnrollCourse`, {
+        const res = await fetch('http://localhost:4000/api/neo4j/EnrollCourse', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

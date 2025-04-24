@@ -12,7 +12,8 @@ const { getUserById,
         insertSection,
         getCursosCreados,
         getCursosMatriculados,
-        getEstudiantesDelCurso
+        getEstudiantesDelCurso,
+        getCoursesbyId
 } = require('./m_functions');
 
 /* 
@@ -184,5 +185,24 @@ router.get('/getIdsEstudiantesMatriculados/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+router.post('/getCoursesByIds', async (req, res) => {
+    const {  ids } = req.body;
+    console.log('courseIds:', ids); // Log the courseIds to check if they are being received correctly
+    if (!ids) {
+        return res.status(400).json({ success: false, message: 'Missing course IDs' });
+    }
+  
+    try {
+        const courses = await getCoursesbyId(ids);
+        if (!courses || courses.length === 0) {
+            return res.status(404).json({ success: false, message: 'Courses not found' });
+        }
+        res.json(courses);
+    } catch (err) {
+        console.error('Error getting courses:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+}); 
 
 module.exports = router;

@@ -147,7 +147,7 @@ router.get('/friends-info/:userId', async (req, res) => {
 and getUserDetailsByIds from Mongo. Retrieves the user's information that
 have a SEND_REQUEST relationship with the user in session. */
 
-router.get('/sent-requests-info/:userId', async (req, res) => {
+router.post('/sent-requests-info/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
     const requestedIds = await getRequestedUserIds(userId);
@@ -179,8 +179,8 @@ router.post('/EnrollCourse', async (req, res) => {
   }
 });
 
-router.get('/getCodigosCursosMatriculados', async (req, res) => {
-  const { userId } = req.query;
+router.get('/getCodigosCursosMatriculados/:userId', async (req, res) => {
+  const { userId } = req.params || req.query; // Check both params and query for userId
 
   if (!userId) {
     return res.status(400).json({ success: false, message: 'Missing user ID' });

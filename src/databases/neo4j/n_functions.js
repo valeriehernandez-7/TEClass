@@ -288,13 +288,12 @@ async function Matricular(userId, courseId) {
     try {
         const result = await session.run(
             `
-            MATCH (u:User {user_id: $userId}), (c:Course {codigo: $courseId})
+            MATCH (u:User {user_id: $userId}), (c:Course {code: $courseId})
             MERGE (u)-[:ENROLLED_IN]->(c)
             RETURN u, c
             `,
             { userId, courseId }
         );
-
         if (result.records.length === 0) {
             return { success: false, message: 'Failed to enroll in course.' };
         }
