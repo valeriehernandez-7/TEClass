@@ -288,16 +288,21 @@ async function Matricular(userId, courseId) {
     const id1 = userId.toString();
     const id2 = courseId.toString();
 
+    console.log('User ID Function:', id1); // Log the user ID
+    console.log('Course ID Function:', id2); // Log the course ID
+
     try {
         const result = await session.run(
             `
-            MATCH (u:User {user_id: $id1})
-            MATCH (c:Course {course_id: $id2})
+            MERGE (u:User {user_id: $id1})
+            MERGE (c:Course {course_id: $id2})
             MERGE (u)-[:ENROLLED_IN]->(c)
             RETURN u, c
             `,
             { id1, id2 }
         );
+
+        console.log('Result in Functions:', result); // Log the result for debugging
         if (result.records.length === 0) {
             return { success: false, message: 'Failed to enroll in course.' };
         }
