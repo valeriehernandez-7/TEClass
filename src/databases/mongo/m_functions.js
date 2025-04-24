@@ -278,7 +278,7 @@ async function getCursosCreados(userId) {
   async function getCoursesbyId(coursesId) {
     const { db } = await connectMongo();
     const objectIds = coursesId.map(id => new ObjectId(id));
-
+    console.log(objectIds);
     return await db.collection('Course').find({ _id: { $in: objectIds } }).toArray();
   }
 

@@ -288,11 +288,15 @@ async function Matricular(userId, courseId) {
     const id1 = userId.toString();
     const id2 = courseId.toString();
 
+    console.log('ID1:', id1);
+    console.log('ID2:', id2);
+    
+
     try {
         const result = await session.run(
             `
-            MATCH (u:User {user_id: $id1})
-            MATCH (c:Course {course_id: $id2})
+            MERGE (u:User {user_id: $id1})
+            MERGE (c:Course {course_id: $id2})
             MERGE (u)-[:ENROLLED_IN]->(c)
             RETURN u, c
             `,
