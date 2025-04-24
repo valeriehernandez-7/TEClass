@@ -10,11 +10,11 @@ import Friends from './app/user/Friends.jsx';
 import NewCourse from './app/course/new_course.jsx';
 import EnrolledIn_Courses from './app/course/EnrolledIn_Courses.jsx';
 import CoursesCreated from './app/course/CoursesCreated.jsx';
-
 import CourseList from './app/course/see_courses.jsx';
 import CourseViewMore from './app/course/CourseViewMorePROFESSOR.jsx';
 import CourseSection from './app/course/section_course.jsx';
 import CloneCourse  from './app/course/CloneCourse.jsx';
+import Chat from './app/user/Chat.jsx';
 function App() {
   return (
     <Router>
@@ -32,6 +32,7 @@ function App() {
         <Route path="/CloneCourse/:id" element={<CloneCourse/>}/>
         <Route path="/my-courses/enrolled" element={<EnrolledIn_Courses/>}/>
         <Route path="/my-courses/created" element={<EnrolledIn_Courses/>}/>
+        <Route path="/chat/:toId" element={<Chat />} />
       </Routes>
     </Router>
   );

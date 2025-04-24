@@ -4,32 +4,11 @@ import { UserContext } from '../../shared/UserSession.jsx';
 import '../../shared/Form.css';
 import './Menu.css';
 import profile_icon from '../../assets/profile_photo.png';
+import menuItemsShared from '../../shared/menuitems.js';
 
 /* The tabs are created and also their navigate path */
 
-const menuItems = {
-  'Cursos': [
-    { label: 'Crear curso', path: '/NewCourse', restrictedTo: 'professor' },
-    { label: 'Ver cursos', path: '/See_Courses' },
-  ],
-  'Mis Cursos': [
-    { label: 'Cursos creados', path: '/my-courses/created', restrictedTo: 'professor' },
-    { label: 'Estudiantes en un curso', path: '/my-courses/created'},
-    { label: 'Cursos matriculados', path: '/my-courses/enrolled'},
-    { label: 'Matricular cursos', path: '/my-courses/enroll' },
-  ],
-  'Amigos': [
-    { label: 'Buscar usuario', path: '/friends/search' },
-    { label: 'Ver amigos', path: '/friends/list' },
-  ],
-  'Evaluaciones': [
-    { label: 'Ver Evaluaciones', path: '/evaluations' }
-  ],
-  'Perfil': [
-    { label: 'Editar perfil', path: '/profile/edit' },
-    { label: 'Cerrar sesión', path: 'logout' },
-  ],
-};
+const menuItems = menuItemsShared;
 
 const Menu = () => {
   const { user } = useContext(UserContext);

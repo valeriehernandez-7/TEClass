@@ -25,12 +25,18 @@ const SearchUser = () => {
     try {
       const response = await fetch(`http://localhost:4000/api/mongo/all-users?currentUserId=${user.id}`);
       const data = await response.json();
-      setUsers(data);
-      setSearchResult(null);
+      if (Array.isArray(data)) {
+        setUsers(data);
+        setSearchResult(null);
+      } else {
+        console.warn('Respuesta inesperada:', data);
+        setUsers([]);
+      }
     } catch (err) {
       console.error('Error al obtener los usuarios:', err);
+      setUsers([]);
     }
-  };
+  };  
 
   const getByUsername = async (username) => {
     try {
@@ -91,9 +97,9 @@ const SearchUser = () => {
     }
   };      
 
-  const handleMessage = (username) => {
-    navigate('/chat');
-  };
+  const handleMessage = (toId) => {
+    navigate(`/chat/${toId}`);
+  };  
 
   const renderUser = (user) => (
     <div className="sch-user-row" key={user._id}>
@@ -155,7 +161,9 @@ const SearchUser = () => {
             ? (Array.isArray(searchResult)
                 ? <div>No se encontró el usuario.</div>
                 : renderUser(searchResult))
-            : users.map((user) => renderUser(user))}
+            : (users.length > 0
+                ? users.map((user) => renderUser(user))
+                : <div>No hay usuarios para mostrar.</div>)}
         </div>
       </div>
       <ToastContainer />
