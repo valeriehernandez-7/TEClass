@@ -37,6 +37,9 @@ const EnrolledIn_Courses = () => {
         const res = await fetch(`http://localhost:4000/api/neo4j/getCodigosCursosMatriculados?userId=${user.id}`);
         const data = await res.json();
         setCourses(data);
+        console.log(user.id);
+        console.log(data);
+        console.log('Fetched courses:', data);
       } catch (error) {
         toast.error('Error al obtener los cursos.');
       }

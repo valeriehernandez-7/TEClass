@@ -7,7 +7,9 @@ const {
   eliminateRequest,
   makeFriends,
   getRelatedUserIds,
-  getRequestedUserIds
+  getRequestedUserIds,
+  Matricular,
+  getCodigosCursosMatriculados
 } = require('./n_functions');
 
 const { getUserDetailsByIds } = require('../mongo/m_functions');
@@ -157,6 +159,38 @@ router.get('/sent-requests-info/:userId', async (req, res) => {
     res.status(200).json({ success: true, users });
   } catch (err) {
     console.error('Error in /sent-requests-info route:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+router.post('/EnrollCourse', async (req, res) => {
+  const { courseId, userId } = req.body;
+
+  if (!courseId || !userId) {
+    return res.status(400).json({ success: false, message: 'Missing course or user ID' });
+  }
+
+  try {
+    const result = await Matricular(userId, courseId);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('Error in /enroll-course route:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+router.get('/getCodigosCursosMatriculados', async (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'Missing user ID' });
+  }
+
+  try {
+    const result = await getCodigosCursosMatriculados(userId);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('Error in /get-cursos-matriculados route:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });

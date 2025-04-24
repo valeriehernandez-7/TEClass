@@ -225,7 +225,7 @@ async function getCodigosCursosCreados(userId) {
         const result = await session.run(
             `
             MATCH (u:User {user_id: $userId})-[:CREATED]->(c:Course)
-            RETURN c.codigo AS codigo
+            RETURN c.course_id AS codigo
             `,
             { userId }
         );
@@ -247,7 +247,7 @@ async function getCodigosCursosMatriculados(userId) {
         const result = await session.run(
             `
             MATCH (u:User {user_id: $userId})-[:ENROLLED_IN]->(c:Course)
-            RETURN c.codigo AS codigo
+            RETURN c.course_id AS codigo
             `,
             { userId }
         );
@@ -282,6 +282,33 @@ async function getIdsEstudiantesMatriculados(codigoCurso) {
     }
 }
 
+async function Matricular(userId, courseId) {
+    const { session } = getNeo4jSession();
+
+    try {
+        const result = await session.run(
+            `
+            MATCH (u:User {user_id: $userId}), (c:Course {codigo: $courseId})
+            MERGE (u)-[:ENROLLED_IN]->(c)
+            RETURN u, c
+            `,
+            { userId, courseId }
+        );
+
+        if (result.records.length === 0) {
+            return { success: false, message: 'Failed to enroll in course.' };
+        }
+
+        return { success: true, message: 'Enrolled in course successfully.' };
+
+    } catch (error) {
+        console.error('Error enrolling in course:', error);
+        return { success: false, message: 'Internal error.' };
+    } finally {
+        await session.close();
+    }
+}
+
 module.exports = {
     checkFriendRelationship,
     checkRequestRelationship,
@@ -291,5 +318,6 @@ module.exports = {
     getRelatedUserIds,
     getRequestedUserIds,
     getCodigosCursosCreados,
-    getCodigosCursosMatriculados
+    getCodigosCursosMatriculados,
+    Matricular
 };

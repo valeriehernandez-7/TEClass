@@ -28,6 +28,7 @@ const menuItems = {
 const StudentsXCourse = ({ CourseId }) => {
   const [students, setStudents] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const navigate = useNavigate();
   const handleOptionClick = (item) => {
     if (item.path === 'logout') {
       
@@ -40,7 +41,7 @@ const StudentsXCourse = ({ CourseId }) => {
   
   useEffect(() => {
     const fetchStuddents = async () => {
-      const res = await fetch(`http://localhost:4000/api/neo4j/getIdsEstudiantesMatriculados?courseId=${id}`);
+      const res = await fetch(`http://localhost:4000/api/neo4j/getIdsEstudiantesMatriculados?courseId=${CourseId}`);
       const data = await res.json();
       setStudents(data);
     };

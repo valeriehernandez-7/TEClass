@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './see_courses.css';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { View } from 'lucide-react' ;
+import {UserContext} from '../../shared/UserSession';
 
 const menuItems = {
   'Cursos': [
@@ -32,7 +33,9 @@ const SeeCourses = () => {
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const { user } = useContext(UserContext);
 
+  console.log('User id:', user.id); // Log the user object
   const navigate = useNavigate();
   
     const fetchCourses = async () => {
@@ -51,14 +54,33 @@ const SeeCourses = () => {
         console.error('Error fetching courses:', error);
       }
     };
-
-    const handleViewMore = (id) => {
-      navigate(`/courseViewMore/${id}`);
-    };
+    const handleEnrollCourse = async (courseId) => {
+      try {
+        const res = await fetch(`http://localhost:4000/api/neo4j/EnrollCourse`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            courseId: courseId,
+          }),
+        });
     
-    const handleSectionCourse = (id) => {
-      navigate(`/section_course/${id}`);
+        const data = await res.json();
+    
+        if (res.ok) {
+          toast.success('Curso matriculado con éxito!');
+        } else {
+          toast.error('Error al matricular el curso.');
+        }
+      } catch (error) {
+        console.error('Error enrolling in course:', error);
+        toast.error('Error al matricularse en el curso.');
+      }
     };
+
+
 
     const handleOptionClick = (item) => {
       if (item.path === 'logout') {
@@ -159,7 +181,7 @@ const SeeCourses = () => {
               <p><strong>Fecha Final:</strong> {course.end_date}</p>
             </div>
             <div className="course-buttons">
-              <button onClick={() => navigate(`/courseSection/${course._id}`)}>Seccionar Curso</button>
+              <button onClick={() => handleEnrollCourse(course._id)}>Matricular Curso</button>
               <button onClick={() => navigate(`/courseViewMore/${course._id}`)}>Ver más</button>
             </div>
           </div>
