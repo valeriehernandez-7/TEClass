@@ -1,16 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const redis = require('./redis'); 
+const redis = require('./redis');
+const multer = require('multer');
+const path = require('path');
 
+/*IMPORTANTE: Se debe de descargar npm install multer para correr esto*/ 
 
-router.post('/', async (req, res) => {
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9) + ext;
+    cb(null, uniqueName);
+  }
+});
+const upload = multer({ storage });
+
+router.post('/', upload.single('file'), async (req, res) => {
   const { from_id, to_id, message } = req.body;
+  const file = req.file;
   const timestamp = Date.now();
   const messageId = `${from_id}:${to_id}:${timestamp}`;
 
   const messageObject = {
     from: from_id,
-    text: message,
+    text: message || null,
+    fileUrl: file ? `/uploads/${file.filename}` : null,
+    fileType: file ? file.mimetype : null,
     timestamp
   };
 
@@ -25,7 +41,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-
 router.get('/:fromId/:toId', async (req, res) => {
   const { fromId, toId } = req.params;
 
@@ -39,7 +54,6 @@ router.get('/:fromId/:toId', async (req, res) => {
     const mensajes2 = Object.values(messagesRaw2).map(msg => JSON.parse(msg));
 
     const todosLosMensajes = [...mensajes1, ...mensajes2];
-
     todosLosMensajes.sort((a, b) => a.timestamp - b.timestamp);
 
     res.json(todosLosMensajes);

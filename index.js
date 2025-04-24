@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const path = require('path');
 
 const cursosRouter = require('./src/databases/cassandra/cursos');
 const matricularRouter = require('./src/databases/cassandra/matricular');
@@ -10,6 +11,7 @@ const chatRouter = require('./src/databases/redis/chat');
 app.use(cors());
 app.use(express.json());
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/chat', chatRouter);
 
 app.use('/cursos', cursosRouter);
