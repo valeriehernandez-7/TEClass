@@ -55,6 +55,7 @@ const SeeCourses = () => {
       }
     };
     const handleEnrollCourse = async (courseId) => {
+      console.log('Enrolling in course with ID:', courseId); // Log the course ID
       try {
         const res = await fetch('http://localhost:4000/api/neo4j/EnrollCourse', {
           method: 'POST',
@@ -66,9 +67,9 @@ const SeeCourses = () => {
             courseId: courseId,
           }),
         });
-    
+        console.log('Response:', res); // Log the response object
         const data = await res.json();
-    
+        console.log('Response data:', data); // Log the response data
         if (res.ok) {
           toast.success('Curso matriculado con éxito!');
         } else {

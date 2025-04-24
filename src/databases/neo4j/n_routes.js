@@ -165,13 +165,15 @@ router.get('/sent-requests-info/:userId', async (req, res) => {
 
 router.post('/EnrollCourse', async (req, res) => {
   const { courseId, userId } = req.body;
-
+console.log("courseId", courseId)
+console.log("userId", userId)
   if (!courseId || !userId) {
     return res.status(400).json({ success: false, message: 'Missing course or user ID' });
   }
 
   try {
     const result = await Matricular(userId, courseId);
+    console.log('Result from Matricular:', result); // Log the result for debugging
     res.status(200).json(result);
   } catch (err) {
     console.error('Error in /enroll-course route:', err);

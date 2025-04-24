@@ -288,10 +288,6 @@ async function Matricular(userId, courseId) {
     const id1 = userId.toString();
     const id2 = courseId.toString();
 
-    console.log('ID1:', id1);
-    console.log('ID2:', id2);
-    
-
     try {
         const result = await session.run(
             `
@@ -302,6 +298,8 @@ async function Matricular(userId, courseId) {
             `,
             { id1, id2 }
         );
+
+        console.log('Result in Functions:', result); // Log the result for debugging
         if (result.records.length === 0) {
             return { success: false, message: 'Failed to enroll in course.' };
         }
