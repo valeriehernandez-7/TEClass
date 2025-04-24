@@ -1,0 +1,70 @@
+.course-form-container {
+    background-color: #CCC038;
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 900px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .course-form-container h2,
+  .course-form-container h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+  
+  .course-info-block p {
+    font-size: 16px;
+    margin: 12px 0;
+  }
+  
+  .course-info-block select {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid #937E0A;
+  }
+  
+  .course-info-block button {
+    margin-left: 10px;
+    padding: 6px 12px;
+    background-color: #937E0A;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .section-form,
+  .subsection-form {
+    margin-top: 30px;
+    background-color: #f8f5d7;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  
+  .section-form input,
+  .subsection-form input,
+  .subsection-form select {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #937E0A;
+    border-radius: 6px;
+  }
+  
+  .section-form button,
+  .subsection-form button {
+    margin-top: 15px;
+    background-color: #937E0A;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }

@@ -1,0 +1,85 @@
+.ch-container {
+    max-width: 800px;
+    margin: 10px auto;
+    padding: 10px;
+    background-color: #CCC038;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ch-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.ch-mensajes {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #C4DAD2;
+    border-radius: 2%;
+}
+
+.ch-burbuja {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    max-width: 60%;
+}
+
+.ch-derecha {
+    background-color: #dcf8c6;
+    margin-left: auto;
+}
+
+.ch-izquierda {
+    background-color: #ffffff;
+    margin-right: auto;
+}
+
+.ch-submit-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.ch-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.ch-input {
+    flex-grow: 1;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.ch-input::placeholder{
+    color: #ffffff;
+  }
+
+.ch-attach-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.ch-submit {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1.5rem;
+    background-color: #E53F42;
+    color: white;
+    border-radius: 8px;
+}
+
+.ch-submit.disabled {
+    background-color: #ccc;
+    pointer-events: none;
+}

@@ -1,0 +1,47 @@
+/* Shared tags */
+
+.container{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    margin-top: 70px;
+    width: 600px;
+    background: #CCC038;
+    padding-bottom: 15px;
+    border-radius: 15px;
+}
+
+.header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.text{
+    color: #ffffff;
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.underline{
+    width: 250px;
+    height: 6px;
+    background: #ffffff;
+    border-radius: 9px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #ffffff;
+}
+  

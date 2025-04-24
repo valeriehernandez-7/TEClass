@@ -1,0 +1,10 @@
+Note - Access redis container in docker with: docker exec -it redis-master redis-cli
+
+Redis doesn't use tables or especific structures.
+It just save the key-value (SET). 
+
+    evaluation:result:{user_id}:{eval_id}
+
+    messages:{from_id}:{to_id}
+
+    questions:{from_id}:{to_id}

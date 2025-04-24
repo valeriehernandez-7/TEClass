@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.menu-container {
+  background-color: #CCC038; /* fondo amarillo */
+  min-height: 100vh;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #937E0A;
+  color: white;
+}
+
+.tabs {
+  display: flex;
+  gap: 20px;
+}
+
+.tab {
+  position: relative;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: absolute;
+  top: 30px;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 1;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #eee;
+}
+
+.user-info .avatar {
+  border-radius: 50%;
+  width: 45px;
+}
+
+.main-container {
+  padding: 30px 40px;
+}
+
+.titulo {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.tabla {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.encabezado {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  font-weight: bold;
+  color: white;
+  background-color: transparent;
+  padding: 10px;
+  border-bottom: 2px solid #fff;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  background-color: #c5e3e3;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.mensaje {
+  font-style: italic;
+  color: #fff;
+}
