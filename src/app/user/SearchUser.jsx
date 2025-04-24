@@ -97,9 +97,9 @@ const SearchUser = () => {
     }
   };      
 
-  const handleMessage = (username) => {
-    navigate('/chat');
-  };
+  const handleMessage = (toId) => {
+    navigate(`/chat/${toId}`);
+  };  
 
   const renderUser = (user) => (
     <div className="sch-user-row" key={user._id}>

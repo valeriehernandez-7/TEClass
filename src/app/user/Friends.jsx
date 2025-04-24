@@ -101,7 +101,7 @@ const Friends = () => {
                         src={send_message}
                         alt="Mensaje"
                         className="f-action-icon"
-                        onClick={() => navigate('/chat')}
+                        onClick={() => navigate(`/chat/${friend._id}`)}
                       />
                     </div>
                   </div>
