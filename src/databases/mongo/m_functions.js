@@ -227,6 +227,53 @@ async function insertsubsection(courseId, subsection) {
     );
 }
 
+async function getCursosCreados(userId) {
+    const { db, client } = await connectMongo();
+    try {
+      const cursos = await db.collection('cursos').find({ creadorId: userId }).toArray();
+      return cursos;
+    } catch (error) {
+      console.error('Error obteniendo cursos creados:', error);
+      throw error;
+    } finally {
+      await client.close();
+    }
+  }
+
+  async function getCursosMatriculados(userId) {
+    const { db, client } = await connectMongo();
+    try {
+      const cursos = await db.collection('cursos').find({ estudiantes: userId }).toArray();
+      return cursos;
+    } catch (error) {
+      console.error('Error obteniendo cursos matriculados:', error);
+      throw error;
+    } finally {
+      await client.close();
+    }
+  }
+  
+  async function getEstudiantesDelCurso(codigoCurso) {
+    const { db, client } = await connectMongo();
+    try {
+      const curso = await db.collection('cursos').findOne({ codigo: codigoCurso });
+  
+      if (!curso || !Array.isArray(curso.estudiantes)) return [];
+  
+      const estudiantes = await db.collection('usuarios')
+        .find({ _id: { $in: curso.estudiantes.map(id => id.toString()) } })
+        .project({ _id: 1, nombre: 1 })
+        .toArray();
+  
+      return estudiantes;
+    } catch (error) {
+      console.error('Error obteniendo estudiantes del curso:', error);
+      throw error;
+    } finally {
+      await client.close();
+    }
+  }
+  
 
 module.exports = {
     getUserById,
@@ -239,5 +286,8 @@ module.exports = {
     NewCourse,
     getAllCourses,
     getCourseById,
-    insertSection
+    insertSection,
+    getCursosCreados,
+    getCursosMatriculados,
+    getEstudiantesDelCurso
 };

@@ -10,6 +10,9 @@ const { getUserById,
         getAllCourses,
         getCourseById,
         insertSection,
+        getCursosCreados,
+        getCursosMatriculados,
+        getEstudiantesDelCurso
 } = require('./m_functions');
 
 /* 
@@ -137,6 +140,48 @@ router.put('/InsertSection', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('Failed to add section');
+    }
+});
+
+// Obtener cursos creados por un usuario
+router.get('/getCodigosCursosCreados/:id', async (req, res) => {
+    const userId = req.query.userId;
+    if (!userId) return res.status(400).json({ error: 'Missing userId' });
+
+    try {
+        const cursos = await getCursosCreados(userId);
+        res.status(200).json(cursos);
+    } catch (err) {
+        console.error('Error en /getCodigosCursosCreados:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Obtener cursos en los que un usuario está matriculado
+router.get('/getCodigosCursosMatriculados/:id', async (req, res) => {
+    const userId = req.query.userId;
+    if (!userId) return res.status(400).json({ error: 'Missing userId' });
+
+    try {
+        const cursos = await getCursosMatriculados(userId);
+        res.status(200).json(cursos);
+    } catch (err) {
+        console.error('Error en /getCodigosCursosMatriculados:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Obtener estudiantes matriculados en un curso
+router.get('/getIdsEstudiantesMatriculados/:id', async (req, res) => {
+    const codigo = req.query.codigo;
+    if (!codigo) return res.status(400).json({ error: 'Missing course code' });
+
+    try {
+        const estudiantes = await getEstudiantesDelCurso(codigo);
+        res.status(200).json(estudiantes);
+    } catch (err) {
+        console.error('Error en /getIdsEstudiantesMatriculados:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

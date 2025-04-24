@@ -218,6 +218,70 @@ async function getRequestedUserIds(userId) {
     }
 }  
 
+async function getCodigosCursosCreados(userId) {
+    const { session } = getNeo4jSession();
+
+    try {
+        const result = await session.run(
+            `
+            MATCH (u:User {user_id: $userId})-[:CREATED]->(c:Course)
+            RETURN c.codigo AS codigo
+            `,
+            { userId }
+        );
+
+        return result.records.map(r => r.get('codigo'));
+    } catch (error) {
+        console.error('Error getting codigos de cursos creados:', error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+}
+
+
+async function getCodigosCursosMatriculados(userId) {
+    const { session } = getNeo4jSession();
+
+    try {
+        const result = await session.run(
+            `
+            MATCH (u:User {user_id: $userId})-[:ENROLLED_IN]->(c:Course)
+            RETURN c.codigo AS codigo
+            `,
+            { userId }
+        );
+
+        return result.records.map(r => r.get('codigo'));
+    } catch (error) {
+        console.error('Error getting codigos de cursos matriculados:', error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+}
+
+async function getIdsEstudiantesMatriculados(codigoCurso) {
+    const { session } = getNeo4jSession();
+
+    try {
+        const result = await session.run(
+            `
+            MATCH (u:User)-[:ENROLLED_IN]->(c:Course {codigo: $codigoCurso})
+            RETURN u.user_id AS id
+            `,
+            { codigoCurso }
+        );
+
+        return result.records.map(r => r.get('id'));
+    } catch (error) {
+        console.error('Error getting IDs de estudiantes matriculados:', error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+}
+
 module.exports = {
     checkFriendRelationship,
     checkRequestRelationship,
@@ -225,5 +289,7 @@ module.exports = {
     eliminateRequest,
     makeFriends,
     getRelatedUserIds,
-    getRequestedUserIds
+    getRequestedUserIds,
+    getCodigosCursosCreados,
+    getCodigosCursosMatriculados
 };

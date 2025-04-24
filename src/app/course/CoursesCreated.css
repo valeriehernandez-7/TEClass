@@ -14,3 +14,11 @@
     padding: 1rem;
     font-weight: bold;
   }
+
+  .titulo-principal {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin: 20px 0;
+  }

@@ -40,7 +40,7 @@ const StudentsXCourse = ({ CourseId }) => {
   
   useEffect(() => {
     const fetchStuddents = async () => {
-      const res = await fetch(`http://localhost:4000/api/neo4j/funcion para hacer lo que sea`);
+      const res = await fetch(`http://localhost:4000/api/neo4j/getIdsEstudiantesMatriculados?courseId=${id}`);
       const data = await res.json();
       setStudents(data);
     };

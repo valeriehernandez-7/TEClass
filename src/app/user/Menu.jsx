@@ -13,7 +13,9 @@ const menuItems = {
     { label: 'Ver cursos', path: '/See_Courses' },
   ],
   'Mis Cursos': [
-    { label: 'Cursos matriculados', path: '/my-courses/enrolled' },
+    { label: 'Cursos creados', path: '/my-courses/created', restrictedTo: 'professor' },
+    { label: 'Estudiantes en un curso', path: '/my-courses/created'},
+    { label: 'Cursos matriculados', path: '/my-courses/enrolled'},
     { label: 'Matricular cursos', path: '/my-courses/enroll' },
   ],
   'Amigos': [
