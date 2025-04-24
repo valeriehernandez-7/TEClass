@@ -147,7 +147,7 @@ router.get('/friends-info/:userId', async (req, res) => {
 and getUserDetailsByIds from Mongo. Retrieves the user's information that
 have a SEND_REQUEST relationship with the user in session. */
 
-router.post('/sent-requests-info/:userId', async (req, res) => {
+router.get('/sent-requests-info/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
     const requestedIds = await getRequestedUserIds(userId);

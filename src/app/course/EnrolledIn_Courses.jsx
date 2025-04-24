@@ -12,6 +12,7 @@ const SeeEnrolledCourses = () => {
 
   const fetchEnrolledCourseIds = async () => {
     try {
+      console.log( "usuario en enrolled",user.id)
       const res = await fetch(`http://localhost:4000/api/neo4j/getCodigosCursosMatriculados/${user.id}`);
       if (!res.ok) throw new Error('Failed to get enrolled course IDs from Neo4j');
       console.log('Response:', res); // Log the response object
@@ -26,20 +27,15 @@ const SeeEnrolledCourses = () => {
   };
 
   const fetchCoursesFromMongo = async (courseIds) => {
+    console.log('courseIds:', courseIds); // Log the course IDs to check if they are being received correctly
     try {
-      const response = await fetch('http://localhost:4000/api/mongo/getCoursesByIds', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ids: courseIds }),
-      });
-  
+      const response = await fetch(`http://localhost:4000/api/mongo/getCoursesByIds/${courseIds.join(',')}`);
       if (!response.ok) {
         throw new Error('Failed to fetch courses from MongoDB');
       }
-  
+      
       const data = await response.json();
+      console.log('Fetched courses:', data); // Log the fetched courses
       return data;
     } catch (error) {
       console.error('Error fetching courses from MongoDB:', error);

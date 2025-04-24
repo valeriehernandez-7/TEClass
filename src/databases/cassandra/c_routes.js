@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { enrollUserInCourse } = require('../controllers/enrollmentController');
+const { enrollUserInCourse 
+  
+} = require('./c_functions');
 
 router.post('/enroll-by-user', async (req, res) => {
   const { userId, courseId } = req.body;

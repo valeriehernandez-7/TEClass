@@ -285,14 +285,18 @@ async function getIdsEstudiantesMatriculados(codigoCurso) {
 async function Matricular(userId, courseId) {
     const { session } = getNeo4jSession();
 
+    const id1 = userId.toString();
+    const id2 = courseId.toString();
+
     try {
         const result = await session.run(
             `
-            MATCH (u:User {user_id: $userId}), (c:Course {code: $courseId})
+            MATCH (u:User {user_id: $id1})
+            MATCH (c:Course {course_id: $id2})
             MERGE (u)-[:ENROLLED_IN]->(c)
             RETURN u, c
             `,
-            { userId, courseId }
+            { id1, id2 }
         );
         if (result.records.length === 0) {
             return { success: false, message: 'Failed to enroll in course.' };

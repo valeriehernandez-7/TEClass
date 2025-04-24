@@ -186,8 +186,8 @@ router.get('/getIdsEstudiantesMatriculados/:id', async (req, res) => {
     }
 });
 
-router.post('/getCoursesByIds', async (req, res) => {
-    const {  ids } = req.body;
+router.get('/getCoursesByIds/:ids', async (req, res) => {
+    const ids = req.params.ids.split(','); // ['id1', 'id2', 'id3'] // Check both params and query for ids
     console.log('courseIds:', ids); // Log the courseIds to check if they are being received correctly
     if (!ids) {
         return res.status(400).json({ success: false, message: 'Missing course IDs' });
