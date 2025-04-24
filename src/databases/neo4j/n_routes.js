@@ -13,6 +13,8 @@ const {
   NewCourseRelationship
 } = require('./n_functions');
 
+const { enrollUserInCourse } = require('../cassandra/c_functions');
+
 const { getUserDetailsByIds } = require('../mongo/m_functions');
 
 /* This route receives two Mongo IDs (sender and receiver)
@@ -166,16 +168,20 @@ router.get('/sent-requests-info/:userId', async (req, res) => {
 
 router.post('/EnrollCourse', async (req, res) => {
   const { courseId, userId } = req.body;
-console.log("courseId", courseId)
-console.log("userId", userId)
+
   if (!courseId || !userId) {
     return res.status(400).json({ success: false, message: 'Missing course or user ID' });
   }
 
   try {
-    const result = await Matricular(userId, courseId);
-    console.log('Result from Matricular:', result); // Log the result for debugging
-    res.status(200).json(result);
+    const neoResult = await Matricular(userId, courseId); // Neo4j
+    const cassandraResult = await enrollUserInCourse(userId, courseId); // Cassandra
+    res.status(200).json({
+      success: true,
+      message: 'User enrolled successfully.',
+      neoResult,
+      cassandraResult
+    });
   } catch (err) {
     console.error('Error in /enroll-course route:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
@@ -198,6 +204,8 @@ router.get('/getCodigosCursosMatriculados/:userId', async (req, res) => {
   }
 });
 
+
+
 router.post('/createCourseRelation', async (req, res) => {
   const { userId, courseId } = req.body;
 
@@ -214,5 +222,5 @@ router.post('/createCourseRelation', async (req, res) => {
   }
 });
 
-module.exports = router;
 
+module.exports = router;

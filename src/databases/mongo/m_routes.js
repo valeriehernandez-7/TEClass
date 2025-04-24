@@ -145,7 +145,7 @@ router.put('/InsertSection', async (req, res) => {
     }
 });
 
-// Obtener cursos creados por un usuario
+
 router.get('/getCodigosCursosCreados/:id', async (req, res) => {
     const userId = req.query.userId;
     if (!userId) return res.status(400).json({ error: 'Missing userId' });
@@ -189,7 +189,6 @@ router.get('/getIdsEstudiantesMatriculados/:id', async (req, res) => {
 
 router.get('/getCoursesByIds/:ids', async (req, res) => {
     const ids = req.params.ids.split(','); // ['id1', 'id2', 'id3'] // Check both params and query for ids
-    console.log('courseIds:', ids); // Log the courseIds to check if they are being received correctly
     if (!ids) {
         return res.status(400).json({ success: false, message: 'Missing course IDs' });
     }
@@ -205,6 +204,8 @@ router.get('/getCoursesByIds/:ids', async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 }); 
+
+
 
 router.get('/getCourseByCode/:code', async (req, res) => {
     const courseCode = req.params.code; // Check both params and query for courseCode

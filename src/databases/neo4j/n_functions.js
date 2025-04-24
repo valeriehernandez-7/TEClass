@@ -299,7 +299,6 @@ async function Matricular(userId, courseId) {
             { id1, id2 }
         );
 
-        console.log('Result in Functions:', result); // Log the result for debugging
         if (result.records.length === 0) {
             return { success: false, message: 'Failed to enroll in course.' };
         }
@@ -313,6 +312,7 @@ async function Matricular(userId, courseId) {
         await session.close();
     }
 }
+
 
 async function NewCourseRelationship (userId, courseId) {
     const { session } = getNeo4jSession();

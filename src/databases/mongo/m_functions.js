@@ -228,59 +228,61 @@ async function insertsubsection(courseId, subsection) {
 }
 
 async function getCursosCreados(userId) {
-    const { db, client } = await connectMongo();
-    try {
-      const cursos = await db.collection('cursos').find({ creadorId: userId }).toArray();
-      return cursos;
-    } catch (error) {
-      console.error('Error obteniendo cursos creados:', error);
-      throw error;
-    } finally {
-      await client.close();
-    }
+  const { db, client } = await connectMongo();
+  try {
+    const cursos = await db.collection('cursos').find({ creadorId: userId }).toArray();
+    return cursos;
+  } catch (error) {
+    console.error('Error obteniendo cursos creados:', error);
+    throw error;
+  } finally {
+    await client.close();
   }
+}
 
-  async function getCursosMatriculados(userId) {
-    const { db, client } = await connectMongo();
-    try {
-      const cursos = await db.collection('cursos').find({ estudiantes: userId }).toArray();
-      return cursos;
-    } catch (error) {
-      console.error('Error obteniendo cursos matriculados:', error);
-      throw error;
-    } finally {
-      await client.close();
-    }
+async function getCursosMatriculados(userId) {
+  const { db, client } = await connectMongo();
+  try {
+    const cursos = await db.collection('cursos').find({ estudiantes: userId }).toArray();
+    return cursos;
+  } catch (error) {
+    console.error('Error obteniendo cursos matriculados:', error);
+    throw error;
+  } finally {
+    await client.close();
   }
+}
   
-  async function getEstudiantesDelCurso(codigoCurso) {
-    const { db, client } = await connectMongo();
-    try {
-      const curso = await db.collection('cursos').findOne({ codigo: codigoCurso });
+async function getEstudiantesDelCurso(codigoCurso) {
+  const { db, client } = await connectMongo();
+  try {
+    const curso = await db.collection('cursos').findOne({ codigo: codigoCurso });
   
-      if (!curso || !Array.isArray(curso.estudiantes)) return [];
+    if (!curso || !Array.isArray(curso.estudiantes)) return [];
   
-      const estudiantes = await db.collection('usuarios')
-        .find({ _id: { $in: curso.estudiantes.map(id => id.toString()) } })
-        .project({ _id: 1, nombre: 1 })
-        .toArray();
+    const estudiantes = await db.collection('usuarios')
+      .find({ _id: { $in: curso.estudiantes.map(id => id.toString()) } })
+      .project({ _id: 1, nombre: 1 })
+      .toArray();
   
-      return estudiantes;
-    } catch (error) {
-      console.error('Error obteniendo estudiantes del curso:', error);
-      throw error;
-    } finally {
-      await client.close();
-    }
+    return estudiantes;
+  } catch (error) {
+    console.error('Error obteniendo estudiantes del curso:', error);
+    throw error;
+  } finally {
+    await client.close();
   }
-  
+}
 
-  async function getCoursesbyId(coursesId) {
-    const { db } = await connectMongo();
-    const objectIds = coursesId.map(id => new ObjectId(id));
-    console.log(objectIds);
-    return await db.collection('Course').find({ _id: { $in: objectIds } }).toArray();
-  }
+async function getCoursesbyId(coursesId) {
+  const { db } = await connectMongo();
+  const objectIds = coursesId.map(id => new ObjectId(id));
+
+  const courses = await db.collection('Course').find({ _id: { $in: objectIds } }).toArray();
+
+  return courses;
+}
+
 
 module.exports = {
     getUserById,
