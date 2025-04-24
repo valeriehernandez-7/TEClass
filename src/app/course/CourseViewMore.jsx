@@ -30,7 +30,7 @@ const menuItems = {
 const ViewMore = () => {
     const {id} = useParams();
     const [course, setCourse] = useState({});
-    console.log( 'Course ID:', id); // Log the course ID
+    
     const [activeDropdown, setActiveDropdown] = useState(null);
     const navigate = useNavigate();
 
@@ -47,9 +47,9 @@ const ViewMore = () => {
 
     const fetchCourse = async () => {
         try {
-            console.log('Fetching course with ID:', id); // Log the course ID being fetched
+             // Log the course ID being fetched
             const res = await fetch(`http://localhost:4000/api/mongo/getCourseById/${id}`);
-            console.log('Response:', res); // Log the response object
+            
             if (res.ok) {
                 const data = await res.json();
                 setCourse(data);

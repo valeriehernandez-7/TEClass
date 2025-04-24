@@ -13,7 +13,8 @@ const { getUserById,
         getCursosCreados,
         getCursosMatriculados,
         getEstudiantesDelCurso,
-        getCoursesbyId
+        getCoursesbyId,
+        getCourseByCode
 } = require('./m_functions');
 
 /* 
@@ -204,5 +205,23 @@ router.get('/getCoursesByIds/:ids', async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 }); 
+
+router.get('/getCourseByCode/:code', async (req, res) => {
+    const courseCode = req.params.code; // Check both params and query for courseCode
+    if (!courseCode) {
+        return res.status(400).json({ success: false, message: 'Missing course code' });
+    }
+
+    try {
+        const course = await getCourseByCode(courseCode);
+        if (!course) {
+            return res.status(404).json({ success: false, message: 'Course not found' });
+        }
+        res.json(course);
+    } catch (err) {
+        console.error('Error getting course:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
 
 module.exports = router;

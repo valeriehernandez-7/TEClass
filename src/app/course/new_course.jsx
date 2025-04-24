@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../shared/Form.css';
 import '../../app/user/Menu.css';
 import './new_course.css';
+import { UserContext } from '../../shared/UserSession';
 import  defaultImagePath from '../../assets/course_default_img.png'; // Import the default image path
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -38,7 +39,9 @@ const menuItems = {
 
 const NewCourse = () => {
   const navigate = useNavigate();
-  const { user, clearUser } = '';;
+  const { user1, clearUser } = '';
+
+  const { user } = useContext(UserContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
    // relative to public folder
@@ -53,6 +56,7 @@ const NewCourse = () => {
     status: '',
     section: {},
   });
+
 
     
   const handleOptionClick = (item) => {
@@ -84,6 +88,7 @@ const NewCourse = () => {
       setFormData({ ...formData, ImageUrl: file });
     }
   };
+
 
   const handleNewCourse = async (e) => {
     e.preventDefault(); // Prevent form reload
@@ -135,7 +140,35 @@ const NewCourse = () => {
       }
 
       toast.success('Curso Insertado!');
-      navigate('/menu');
+      const course = await fetch(`http://localhost:4000/api/mongo/getCourseByCode/${code}`);
+      if (!course.ok) {
+        const message = await course.text();
+        toast.error(message || 'Error al obtener el curso.');
+        return;
+      } else {
+        const data = await course.json();
+         // Log the fetched course data
+        const responseRELATION = await fetch('http://localhost:4000/api/neo4j/createCourseRelation', {
+      
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },  
+          body: JSON.stringify({
+            userId: user.id,
+            courseId: data._id,
+          }),
+        });
+        if (!responseRELATION.ok) {
+          const message = await responseRELATION.text();
+          toast.error(message || 'Error al crear la relación del curso.');
+          return;
+        } else {
+          toast.success('Relación creada con éxito!');
+        }
+      }
+
+
     } catch (error) {
       console.error('Register error:', error);
       toast.error('Ocurrió un error al conectar con el servidor');

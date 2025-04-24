@@ -314,6 +314,34 @@ async function Matricular(userId, courseId) {
     }
 }
 
+async function NewCourseRelationship (userId, courseId) {
+    const { session } = getNeo4jSession();
+
+    try {
+        const result = await session.run(
+            `
+            MERGE (u:User {user_id: $userId})
+            MERGE (c:Course {course_id: $courseId})
+            MERGE (u)-[:CREATED]->(c)
+            RETURN u, c
+            `,
+            { userId, courseId }
+        );
+
+        if (result.records.length === 0) {
+            return { success: false, message: 'Failed to create course relationship.' };
+        }
+
+        return { success: true, message: 'Course relationship created successfully.' };
+
+    } catch (error) {
+        console.error('Error creating course relationship:', error);
+        return { success: false, message: 'Internal error.' };
+    } finally {
+        await session.close();
+    }
+}
+
 module.exports = {
     checkFriendRelationship,
     checkRequestRelationship,
@@ -324,5 +352,6 @@ module.exports = {
     getRequestedUserIds,
     getCodigosCursosCreados,
     getCodigosCursosMatriculados,
-    Matricular
+    Matricular,
+    NewCourseRelationship
 };

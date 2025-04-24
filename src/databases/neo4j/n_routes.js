@@ -9,7 +9,8 @@ const {
   getRelatedUserIds,
   getRequestedUserIds,
   Matricular,
-  getCodigosCursosMatriculados
+  getCodigosCursosMatriculados,
+  NewCourseRelationship
 } = require('./n_functions');
 
 const { getUserDetailsByIds } = require('../mongo/m_functions');
@@ -197,4 +198,21 @@ router.get('/getCodigosCursosMatriculados/:userId', async (req, res) => {
   }
 });
 
+router.post('/createCourseRelation', async (req, res) => {
+  const { userId, courseId } = req.body;
+
+  if (!userId || !courseId) {
+    return res.status(400).json({ success: false, message: 'Missing user or course ID' });
+  }
+
+  try {
+    const result = await NewCourseRelationship(userId, courseId);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('Error in /create-course-relation route:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
 module.exports = router;
+

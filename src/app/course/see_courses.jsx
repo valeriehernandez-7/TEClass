@@ -35,27 +35,27 @@ const SeeCourses = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const { user } = useContext(UserContext);
 
-  console.log('User id:', user.id); // Log the user object
+  
   const navigate = useNavigate();
   
     const fetchCourses = async () => {
       try {
         const res = await fetch('http://localhost:4000/api/mongo/getAllCourses');
-        console.log('Response:', res); // Log the response object
+        
         if (res.ok) {
         const data = await res.json();
         
         setCourses(data);
         setFilteredCourses(data);
         setAllCourses(data);
-        console.log('Fetched courses:', data);
+        
         }
       } catch (error) {
         console.error('Error fetching courses:', error);
       }
     };
     const handleEnrollCourse = async (courseId) => {
-      console.log('Enrolling in course with ID:', courseId); // Log the course ID
+      
       try {
         const res = await fetch('http://localhost:4000/api/neo4j/EnrollCourse', {
           method: 'POST',
@@ -67,9 +67,9 @@ const SeeCourses = () => {
             courseId: courseId,
           }),
         });
-        console.log('Response:', res); // Log the response object
+       
         const data = await res.json();
-        console.log('Response data:', data); // Log the response data
+        
         if (res.ok) {
           toast.success('Curso matriculado con éxito!');
         } else {

@@ -36,7 +36,7 @@ const menuItems = {
 
   const InsertSection = () => {
     const {id} = useParams()
-    console.log(id) // Log the course object
+     // Log the course object
     
     const [newSection, setNewSection] = useState('');
     const [resources, setResources] = useState(['', '']);
@@ -70,14 +70,13 @@ const menuItems = {
     
       const fetchCourse = async () => {
         try {
-            console.log('Fetching course with ID:', id); // Log the course ID being fetched
+            // Log the course ID being fetched
             const res = await fetch(`http://localhost:4000/api/mongo/getCourseById/${id}`);
-            console.log('Response:', res); // Log the response object
+            // Log the response object
             if (res.ok) {
                 const data = await res.json();
                 setCourse(data);
-                console.log('Course data:', data.name);
-                console.log ('Course section:', course.section);
+                
             } else {
                 console.error('Error fetching course:', res.statusText);
             }
@@ -92,14 +91,14 @@ const menuItems = {
         fetchCourse();
       if (course.section) {
         setSections([course.section]);
-        console.log('Sections:', sections); // Log the sections
+        // Log the sections
       }
     }, [id]);
     
     const [status, setStatus] = useState(course.status);
-    console.log('Course status:', status); // Log the course status
+   
     const handleUpdateStatus = () => {
-      console.log('Updating status to:', status);
+      
       // Send to backend logic here
     };
   
@@ -124,12 +123,12 @@ const menuItems = {
           sub_resources: subResources.filter(Boolean)
         }
       };
-      console.log('Uploading section:', sectionData);
+      
       // Send to backend logic here
     };
   
     const handleAddSubsection = () => {
-      console.log(`Adding subsection "${newSubInput}" to section "${selectedSection}"`);
+     
       // Send to backend logic here
     };
     
