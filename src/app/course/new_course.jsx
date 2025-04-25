@@ -190,7 +190,7 @@ const NewCourse = () => {
                 e.target.onerror = null;
                 e.target.src = profile_icon;
             }}
-        />
+          />
         </div>
       </header>
 
