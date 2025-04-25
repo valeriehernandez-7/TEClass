@@ -15,7 +15,7 @@ app.use('/api/mongo', mongoRouter);
 app.use('/api/neo4j', neo4jRouter);
 app.use('/api/redis', redisRouter);
 app.use('/api/cassandra', cassandraRouter);
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 /* 
 The databse will run in port 4000, because the port 3000 is used by the react app.
 */
