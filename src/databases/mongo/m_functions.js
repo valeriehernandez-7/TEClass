@@ -154,7 +154,7 @@ async function getUserDetailsByIds(ids) {
   
     return await db
       .collection('User')
-      .find({ _id: { $in: objectIds } })
+      .find({ user_id: { $in: objectIds } })
       .project({ username: 1, first_name: 1, last_name: 1, avatar_url: 1, role: 1 })
       .toArray();
 }
@@ -254,25 +254,37 @@ async function getCursosMatriculados(userId) {
 }
   
 async function getEstudiantesDelCurso(codigoCurso) {
-  const { db, client } = await connectMongo();
-  try {
-    const curso = await db.collection('cursos').findOne({ codigo: codigoCurso });
+    const { db, client } = await connectMongo();
+    try {
+      // Buscar el curso por código
+      const curso = await db.collection('cursos').findOne({ codigo: codigoCurso });
+      
+      if (!curso) {
+        console.error(`Curso con código ${codigoCurso} no encontrado.`);
+        return [];
+      }
   
-    if (!curso || !Array.isArray(curso.estudiantes)) return [];
+      // Verificar si el campo estudiantes existe y es un array
+      if (!Array.isArray(curso.estudiantes) || curso.estudiantes.length === 0) {
+        console.log(`No hay estudiantes matriculados en el curso con código ${codigoCurso}.`);
+        return [];
+      }
   
-    const estudiantes = await db.collection('usuarios')
-      .find({ _id: { $in: curso.estudiantes.map(id => id.toString()) } })
-      .project({ _id: 1, nombre: 1 })
-      .toArray();
+      // Obtener los estudiantes asociados al curso
+      const estudiantes = await db.collection('usuarios')
+        .find({ _id: { $in: curso.estudiantes.map(id => id.toString()) } })
+        .project({ _id: 1, nombre: 1 })
+        .toArray();
   
-    return estudiantes;
-  } catch (error) {
-    console.error('Error obteniendo estudiantes del curso:', error);
-    throw error;
-  } finally {
-    await client.close();
+      return estudiantes;
+    } catch (error) {
+      console.error('Error obteniendo estudiantes del curso:', error);
+      throw error;
+    } finally {
+      // Cerrar la conexión de la base de datos
+      await client.close();
+    }
   }
-}
 
 async function getCoursesbyId(coursesId) {
   const { db } = await connectMongo();

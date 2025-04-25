@@ -14,6 +14,7 @@ import CourseList from './app/course/see_courses.jsx';
 import CourseViewMore from './app/course/CourseViewMorePROFESSOR.jsx';
 import CourseSection from './app/course/section_course.jsx';
 import CloneCourse  from './app/course/CloneCourse.jsx';
+import StudentsXCourse  from './app/course/StudentsXCourse.jsx';
 import Chat from './app/user/Chat.jsx';
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/CloneCourse/:id" element={<CloneCourse/>}/>
         <Route path="/my-courses/enrolled" element={<EnrolledIn_Courses/>}/>
         <Route path="/my-courses/created" element={<EnrolledIn_Courses/>}/>
+        <Route path="/StudentsXCourse/:courseId" element={<StudentsXCourse/>}/>
         <Route path="/chat/:toId" element={<Chat />} />
       </Routes>
     </Router>

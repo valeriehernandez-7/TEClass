@@ -225,4 +225,20 @@ router.get('/getCourseByCode/:code', async (req, res) => {
     }
 });
 
+router.post('/getUsersByIds', async (req, res) => {
+    const { ids } = req.body;
+  
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'Formato incorrecto. Se espera un arreglo de IDs.' });
+    }
+  
+    try {
+      const users = await getUserDetailsByIds(ids);
+      res.json(users);
+    } catch (err) {
+      console.error('Error al obtener usuarios desde MongoDB:', err);
+      res.status(500).json({ error: 'Error al obtener usuarios' });
+    }
+  });
+
 module.exports = router;

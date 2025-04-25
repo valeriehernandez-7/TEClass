@@ -10,7 +10,10 @@ const {
   getRequestedUserIds,
   Matricular,
   getCodigosCursosMatriculados,
-  NewCourseRelationship
+  NewCourseRelationship,
+  getEstudiantesIds,
+
+
 } = require('./n_functions');
 
 const { enrollUserInCourse } = require('../cassandra/c_functions');
@@ -233,5 +236,25 @@ router.post('/createCourseRelation', async (req, res) => {
   }
 });
 
+router.get('/getEstudiantesDetails/:courseId', async (req, res) => {
+  const { courseId } = req.params; // Cambié de req.query a req.params
+
+  if (!courseId) {
+    return res.status(400).json({ error: 'courseId es requerido' });
+  }
+
+  try {
+    const ids = await getEstudiantesIds(courseId);
+    if (ids.length === 0) {
+      return res.status(200).json([]); // No hay estudiantes
+    }
+
+    const users = await getUserDetailsByIds(ids);
+    res.json(users);
+  } catch (error) {
+    console.error('Error combinando Neo4j y Mongo:', error);
+    res.status(500).json({ error: 'Error al obtener detalles de estudiantes' });
+  }
+});
 
 module.exports = router;

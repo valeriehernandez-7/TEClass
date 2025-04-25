@@ -306,6 +306,7 @@ async function Matricular(userId, courseId) {
         MERGE (u:User {user_id: $id1})
         MERGE (c:Course {course_id: $id2})
         CREATE (u)-[:ENROLLED_IN]->(c)
+        CREATE (c)-[:HAS_ENROLED]->(u)
         RETURN u, c
         `,
         { id1, id2 }
@@ -353,6 +354,27 @@ async function NewCourseRelationship (userId, courseId) {
     }
 }
 
+async function getEstudiantesIds(CourseId) {
+    const { session } = getNeo4jSession();
+
+    try {
+        const result = await session.run(
+            `
+            MATCH (c:Course {course_id: $CourseId})-[:HAS_ENROLED]->(u:User)
+            RETURN u.user_id AS id
+            `,
+            { CourseId }
+        );
+
+        return result.records.map(r => r.get('id'));
+    } catch (error) {
+        console.error('Error consiguiendo los id de los estudiantes matriculados:', error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+}
+
 module.exports = {
     checkFriendRelationship,
     checkRequestRelationship,
@@ -364,5 +386,6 @@ module.exports = {
     getCodigosCursosCreados,
     getCodigosCursosMatriculados,
     Matricular,
-    NewCourseRelationship
+    NewCourseRelationship,
+    getEstudiantesIds
 };
