@@ -237,7 +237,7 @@ router.post('/createCourseRelation', async (req, res) => {
 });
 
 router.get('/getEstudiantesIds/:courseId', async (req, res) => {
-  const { courseId } = req.params;  // Obtenemos el `courseId` de la URL
+  const { courseId } = req.params || req.query;  // Obtenemos el `courseId` de la URL
 
   if (!courseId) {
     return res.status(400).json({ error: 'courseId es requerido' });

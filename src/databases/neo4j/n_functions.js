@@ -355,19 +355,19 @@ async function NewCourseRelationship (userId, courseId) {
 
 async function getEstudiantesIds(courseId) {
     const { session } = getNeo4jSession();
-
+    const CourseId = courseId.toString();
     try {
         const result = await session.run(
             
-            `MATCH (u:User)-[:ENROLLED_IN]->(c:Course {course_id: $courseId})
-            RETURN u.user_id AS id`
+            `MATCH (u:User)-[:ENROLLED_IN]->(c:Course {course_id: $CourseId})
+            RETURN u.user_id AS userId`
             ,
-            { courseId }
+            { CourseId }
         );
         result.records.forEach((record, i) => {
             console.log(`Record ${i}:`, record.toObject());
           });
-        return result.records.map(r => r.get('id'));
+        return result.records.map(r => r.get('userId'));
     } catch (error) {
         console.error('Error getting ids de estudiantes matriculados:', error);
         throw error;
