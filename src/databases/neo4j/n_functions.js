@@ -284,35 +284,46 @@ async function getIdsEstudiantesMatriculados(codigoCurso) {
 
 async function Matricular(userId, courseId) {
     const { session } = getNeo4jSession();
-
+  
     const id1 = userId.toString();
     const id2 = courseId.toString();
-
+  
     try {
-        const result = await session.run(
-            `
-            MERGE (u:User {user_id: $id1})
-            MERGE (c:Course {course_id: $id2})
-            MERGE (u)-[:ENROLLED_IN]->(c)
-            RETURN u, c
-            `,
-            { id1, id2 }
-        );
+      const checkResult = await session.run(
+        `
+        MATCH (u:User {user_id: $id1})-[r:ENROLLED_IN]->(c:Course {course_id: $id2})
+        RETURN r
+        `,
+        { id1, id2 }
+      );
+      
+      if (checkResult.records.length > 0) {
+        return { success: false, message: 'Ya estás matriculado en este curso.' };
+      }
 
-        if (result.records.length === 0) {
-            return { success: false, message: 'Failed to enroll in course.' };
-        }
-
-        return { success: true, message: 'Enrolled in course successfully.' };
-
+      const enrollResult = await session.run(
+        `
+        MERGE (u:User {user_id: $id1})
+        MERGE (c:Course {course_id: $id2})
+        CREATE (u)-[:ENROLLED_IN]->(c)
+        RETURN u, c
+        `,
+        { id1, id2 }
+      );
+  
+      if (enrollResult.records.length === 0) {
+        return { success: false, message: 'No se pudo matricular en el curso.' };
+      }
+  
+      return { success: true, message: 'Matriculado correctamente en el curso.' };
+  
     } catch (error) {
-        console.error('Error enrolling in course:', error);
-        return { success: false, message: 'Internal error.' };
+      console.error('Error al matricular en Neo4j:', error);
+      return { success: false, message: 'Error interno en Neo4j.' };
     } finally {
-        await session.close();
+      await session.close();
     }
-}
-
+}  
 
 async function NewCourseRelationship (userId, courseId) {
     const { session } = getNeo4jSession();

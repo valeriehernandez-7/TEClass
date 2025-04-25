@@ -29,6 +29,8 @@ CREATE (`user`:`User` {
 
 (`user`)-[:`ENROLLED_IN` {}]->(`course`),
 
+(`course`)-[:`HAS_ENROLED` {}]->(`user`),
+
 (`user`)-[:`TOOK_EVALUATION` {}]->(`evaluation`),
 
 (`user`)-[:`SEND_REQUEST` {}]->(`user`),

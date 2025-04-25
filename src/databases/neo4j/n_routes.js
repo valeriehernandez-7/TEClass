@@ -174,17 +174,28 @@ router.post('/EnrollCourse', async (req, res) => {
   }
 
   try {
-    const neoResult = await Matricular(userId, courseId); // Neo4j
-    const cassandraResult = await enrollUserInCourse(userId, courseId); // Cassandra
+    const neoResult = await Matricular(userId, courseId);
+    const cassandraResult = await enrollUserInCourse(userId, courseId);
+    
+    if (!neoResult.success || !cassandraResult.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'No se pudo completar la matrícula.',
+        neoResult,
+        cassandraResult
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: 'User enrolled successfully.',
+      message: 'Usuario matriculado correctamente.',
       neoResult,
       cassandraResult
     });
+
   } catch (err) {
-    console.error('Error in /enroll-course route:', err);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error('Error en /EnrollCourse:', err);
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 });
 
