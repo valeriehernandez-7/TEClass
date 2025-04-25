@@ -100,6 +100,9 @@ const CoursesCreated = () => {
                   <div className="course-buttons">
                     <button onClick={() => navigate(`/courseViewMoreProf/${data._id}`)}>Ver más</button>
                   </div>
+                  <div className="course-buttons">
+                    <button onClick={() => navigate(`/courseSection/${data._id}`)}>Seccionar curso</button>
+                  </div>
                 </div>
               ))
             ) : (
