@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../../shared/Form.css';
 import '../../app/user/Menu.css';
@@ -6,6 +6,8 @@ import './CloneCourse.css';
 import defaultImagePath from '../../assets/course_default_img.png';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { UserContext } from '../../shared/UserSession';
+import menuItems from '../../shared/menuitems'; // Import the menu items
 
 const toBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -14,27 +16,6 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.onerror = reject;
 });
 
-const menuItems = {
-  'Cursos': [
-    { label: 'Crear curso', path: '/NewCourse' },
-    { label: 'Ver cursos', path: '/See_Courses' },
-  ],
-  'Mis Cursos': [
-    { label: 'Cursos matriculados', path: '/my-courses/enrolled' },
-    { label: 'Matricular cursos', path: '/my-courses/enroll' },
-  ],
-  'Amigos': [
-    { label: 'Buscar usuario', path: '/friends/search' },
-    { label: 'Ver amigos', path: '/friends/list' },
-  ],
-  'Evaluaciones': [
-    { label: 'Ver Evaluaciones', path: '/evaluations' }
-  ],
-  'Perfil': [
-    { label: 'Editar perfil', path: '/profile/edit' },
-    { label: 'Cerrar sesión', path: 'logout' },
-  ],
-};
 
 const CloneCourse = () => {
   const { id } = useParams();
@@ -43,7 +24,7 @@ const CloneCourse = () => {
   const [formData, setFormData] = useState(null);
   const [imagePreview, setImagePreview] = useState(defaultImagePath);
   const [activeDropdown, setActiveDropdown] = useState(null);
-
+  const { user } = useContext(UserContext);
   useEffect(() => {
     const fetchCourse = async () => {
       try {
@@ -153,7 +134,36 @@ const CloneCourse = () => {
       }
 
       toast.success('Curso clonado correctamente!');
-      navigate('/menu');
+      const course = await fetch(`http://localhost:4000/api/mongo/getCourseByCode/${code}`);
+            if (!course.ok) {
+              const message = await course.text();
+              toast.error(message || 'Error al obtener el curso.');
+              return;
+            } else {
+              const data = await course.json();
+               // Log the fetched course data
+              const responseRELATION = await fetch('http://localhost:4000/api/neo4j/createCourseRelation', {
+            
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },  
+                body: JSON.stringify({
+                  userId: user.id,
+                  courseId: data._id,
+                }),
+              });
+              if (!responseRELATION.ok) {
+                const message = await responseRELATION.text();
+                toast.error(message || 'Error al crear la relación del curso.');
+                return;
+              } else {
+                toast.success('Relación creada con éxito!');
+              }
+            }
+
+    
+
     } catch (error) {
       console.error('Error al clonar curso:', error);
       toast.error('Ocurrió un error al conectar con el servidor');

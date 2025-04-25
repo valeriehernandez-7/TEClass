@@ -33,7 +33,7 @@ function App() {
         <Route path="/courseSection/:id" element={<CourseSection/>}/>
         <Route path="/CloneCourse/:id" element={<CloneCourse/>}/>
         <Route path="/my-courses/enrolled" element={<EnrolledIn_Courses/>}/>
-        <Route path="/my-courses/created" element={<EnrolledIn_Courses/>}/>
+        <Route path="/my-courses/created" element={<CoursesCreated/>}/>
         <Route path="/chat/:toId" element={<Chat />} />
       </Routes>
     </Router>

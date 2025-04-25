@@ -1,31 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
-import './CoursesCreated.css';
+import './EnrolledIn_Courses.css';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { UserContext } from '../../shared/UserSession';
-
-const menuItems = {
-  'Cursos': [
-    { label: 'Crear curso', path: '/NewCourse' },
-    { label: 'Ver cursos', path: '/See_Courses' },
-  ],
-  'Mis Cursos': [
-    { label: 'Cursos creados', path: '/my-courses/created', restrictedTo: 'professor' },
-    { label: 'Cursos matriculados', path: '/my-courses/enrolled' },
-    { label: 'Matricular cursos', path: '/my-courses/enroll' },
-  ],
-  'Amigos': [
-    { label: 'Buscar usuario', path: '/friends/search' },
-    { label: 'Ver amigos', path: '/friends/list' },
-  ],
-  'Evaluaciones': [
-    { label: 'Ver Evaluaciones', path: '/evaluations' }
-  ],
-  'Perfil': [
-    { label: 'Editar perfil', path: '/profile/edit' },
-    { label: 'Cerrar sesión', path: 'logout' },
-  ],
-};
+import { View } from 'lucide-react';
+import profile_icon from '../../assets/profile_photo.png';
+import menuItems from '../../shared/menuitems';
 
 const CoursesCreated = () => {
   const { user } = useContext(UserContext);
@@ -41,74 +21,94 @@ const CoursesCreated = () => {
     }
     setActiveDropdown(null);
   };
+  const fetchCourses = async () => {
+    try {
+      const res = await fetch(`http://localhost:4000/api/neo4j/getCodigosCursosCreados/${user.id}`);
+      const courseIds = await res.json();
+      return courseIds;
+    } catch (error) {
+      console.error('Error fetching created courses:', error);
+      return [];
+    }
+  };
 
+  const fetchCoursesFromMongo = async (courseIds) => {
+    
+    try {
+      const response = await fetch(`http://localhost:4000/api/mongo/getCoursesByIds/${courseIds.join(',')}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses from MongoDB');
+      }
+      
+      const data = await response.json();
+      console.log('Fetched courses:', data); // Log the response object
+       // Log the fetched courses
+      return data;
+    } catch (error) {
+      console.error('Error fetching courses from MongoDB:', error);
+    }
+  };
+    
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await fetch(`http://localhost:4000/api/neo4j/getCodigosCursosCreados?userId=${user.id}`);
-        const data = await res.json();
-        setCourses(data);
-      } catch (error) {
-        console.error('Error fetching created courses:', error);
+    const loadCourses = async () => {
+      const courseIds = await fetchCourses();
+      if (courseIds.length > 0) {
+        const courses = await fetchCoursesFromMongo(courseIds);
+        setCourses(courses);
       }
     };
-    fetchCourses();
-  }, []);
+    if (user?.id) loadCourses();
+  }, [user]);
+
 
   return (
     <div className="menu-container">
       <ToastContainer />
       <header className="menu-header">
         <div className="tabs">
-          {Object.keys(menuItems).map((tab) => (
-            <div
-              key={tab}
-              className="tab"
-              onClick={() => setActiveDropdown(activeDropdown === tab ? null : tab)}
-            >
-              {tab}
-              {activeDropdown === tab && (
-                <div className="dropdown">
-                  {menuItems[tab].map((item) => (
-                    <div
-                      key={item.label}
-                      className="dropdown-item"
-                      onClick={() => handleOptionClick(item)}
-                    >
-                      {item.label}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+          <div className="tab" onClick={() => navigate(-1)}>
+            <View className="view-icon" /> Volver
+          </div>
         </div>
         <div className="user-info">
           <img
+            src={user?.avatar_url || profile_icon}
+            alt="avatar"
             className="avatar"
-            src="https://via.placeholder.com/45"
-            alt="User Avatar"
-            title="Perfil"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = profile_icon;
+            }}
           />
         </div>
       </header>
 
-      <div className="courses-container">
-        <h2 className="titulo-principal">CURSOS CREADOS</h2>
-        {courses.length === 0 ? (
-          <div className="mensaje">No hay cursos para mostrar.</div>
-        ) : (
-          courses.map((course, i) => (
-            <div key={i} className="fila">
-              <div>{course.codigo}</div>
-              <div>{course.nombre}</div>
-              <div>{course.fecha}</div>
-            </div>
-          ))
-        )}
+      <div className="course-list-container">
+        <h2>Cursos Creados</h2>
+        <div className="courses-wrapper">
+          <div className="course-dropdown">
+            {courses.length > 0 ? (
+              courses.map((data) => (
+                <div className="course-card" key={data._id || data.code}>
+                  <img src={data.image_url} alt="Course" className="course-image" />
+                  <div className="course-info">
+                    <p><strong>Código:</strong> {data.code}</p>
+                    <p><strong>Nombre:</strong> {data.name}</p>
+                    <p><strong>Fecha de Inicio:</strong> {data.start_date}</p>
+                    <p><strong>Fecha Final:</strong> {data.end_date}</p>
+                  </div>
+                  <div className="course-buttons">
+                    <button onClick={() => navigate(`/courseViewMoreProf/${data._id}`)}>Ver más</button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="no-results">No estás matriculado en ningún curso.</p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
-
 export default CoursesCreated;

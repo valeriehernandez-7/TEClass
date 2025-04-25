@@ -10,7 +10,9 @@ const {
   getRequestedUserIds,
   Matricular,
   getCodigosCursosMatriculados,
-  NewCourseRelationship
+  NewCourseRelationship,
+  GetCodigosCursosCreados,
+  getCodigosCursosCreados,
 } = require('./n_functions');
 
 const { enrollUserInCourse } = require('../cassandra/c_functions');
@@ -233,5 +235,20 @@ router.post('/createCourseRelation', async (req, res) => {
   }
 });
 
+router.get('/getCodigosCursosCreados/:userId', async (req, res) => {
+  const { userId } = req.params || req.query; // Check both params and query for userId
+
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'Missing user ID' });
+  }
+
+  try {
+    const result = await getCodigosCursosCreados(userId);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('Error in /get-cursos-creados route:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
 
 module.exports = router;

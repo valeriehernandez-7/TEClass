@@ -6,7 +6,7 @@ const menuItems = {
   ],
   'Mis Cursos': [
     { label: 'Cursos matriculados', path: '/my-courses/enrolled' },
-    { label: 'Matricular cursos', path: '/my-courses/enroll' },
+    { label: 'Mis cursos creados', path: '/my-courses/created', restrictedTo: 'professor' },
   ],
   'Amigos': [
     { label: 'Buscar usuario', path: '/friends/search' },
