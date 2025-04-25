@@ -241,4 +241,23 @@ router.post('/getUsersByIds', async (req, res) => {
     }
   });
 
+  router.get('/getEstudiantesDetailsByIds/:ids', async (req, res) => {
+    const idsString = req.params.ids;
+  
+    if (!idsString) {
+      return res.status(400).json({ error: 'Se requieren IDs en la URL' });
+    }
+  
+    try {
+      const stringIds = idsString.split(',').map(id => id.trim());
+      const objectIds = stringIds.map(id => new ObjectId(id));
+      const estudiantes = await getEstudiantesDelCurso(objectIds);
+      res.status(200).json(estudiantes);
+    } catch (error) {
+      console.error('Error al obtener detalles de estudiantes desde MongoDB:', error);
+      res.status(500).json({ error: 'Error al obtener detalles de estudiantes' });
+    }
+  });
+  
+
 module.exports = router;

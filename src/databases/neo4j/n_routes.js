@@ -236,24 +236,27 @@ router.post('/createCourseRelation', async (req, res) => {
   }
 });
 
-router.get('/getEstudiantesDetails/:courseId', async (req, res) => {
-  const { courseId } = req.params; // Cambié de req.query a req.params
+router.get('/getEstudiantesIds/:courseId', async (req, res) => {
+  const { courseId } = req.params;  // Obtenemos el `courseId` de la URL
 
   if (!courseId) {
     return res.status(400).json({ error: 'courseId es requerido' });
   }
 
   try {
-    const ids = await getEstudiantesIds(courseId);
-    if (ids.length === 0) {
-      return res.status(200).json([]); // No hay estudiantes
+    // Llamamos a la función para obtener los IDs de los estudiantes matriculados
+    const studentIds = await getEstudiantesIds(courseId);
+    
+    // Si no se encuentran estudiantes, devolvemos una respuesta vacía
+    if (studentIds.length === 0) {
+      return res.status(200).json([]);
     }
 
-    const users = await getUserDetailsByIds(ids);
-    res.json(users);
+    // Enviamos la lista de IDs de los estudiantes
+    res.json(studentIds);
   } catch (error) {
-    console.error('Error combinando Neo4j y Mongo:', error);
-    res.status(500).json({ error: 'Error al obtener detalles de estudiantes' });
+    console.error('Error al obtener los IDs de los estudiantes:', error);
+    res.status(500).json({ error: 'Hubo un error al obtener los IDs de los estudiantes' });
   }
 });
 
