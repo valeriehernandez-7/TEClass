@@ -1,31 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext  } from 'react';
 import './see_courses.css';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { View } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import './CourseViewMore.css';
-const menuItems = {
-  'Cursos': [
-    { label: 'Crear curso', path: '/NewCourse' },
-    { label: 'Ver cursos', path: '/See_Courses' },
-  ],
-  'Mis Cursos': [
-    { label: 'Cursos matriculados', path: '/my-courses/enrolled' },
-    { label: 'Matricular cursos', path: '/my-courses/enroll' },
-  ],
-  'Amigos': [
-    { label: 'Buscar usuario', path: '/friends/search' },
-    { label: 'Ver amigos', path: '/friends/list' },
-  ],
-  'Evaluaciones': [
-    { label: 'Ver Evaluaciones', path: '/evaluations' }
-  ],
-  'Perfil': [
-    { label: 'Editar perfil', path: '/profile/edit' },
-    { label: 'Cerrar sesión', path: 'logout' },
-  ],
-};
+import profile_icon from '../../assets/profile_photo.png';
+import { UserContext } from '../../shared/UserSession';
+import menuItemsShared from '../../shared/menuitems.js';
+
+const menuItems = menuItemsShared;
 
 const ViewMore = () => {
     const {id} = useParams();
@@ -33,7 +17,7 @@ const ViewMore = () => {
    
     const [activeDropdown, setActiveDropdown] = useState(null);
     const navigate = useNavigate();
-
+    const { user } = useContext(UserContext);
 
     const handleOptionClick = (item) => {
         if (item.path === 'logout') {
@@ -100,12 +84,15 @@ const ViewMore = () => {
                           ))}
                         </div>
                         <div className="user-info">
-                          <img
+                        <img
+                            src={user?.avatar_url || profile_icon}
+                            alt="avatar"
                             className="avatar"
-                            src="https://via.placeholder.com/45"
-                            alt="User Avatar"
-                            title="Perfil"
-                          />
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = profile_icon;
+                            }}
+                        />
                         </div>
                       </header>
     <div className="page-wrapper">

@@ -4,28 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { View } from 'lucide-react' ;
 import {UserContext} from '../../shared/UserSession';
+import menuItemsShared from '../../shared/menuitems.js';
+import profile_icon from '../../assets/profile_photo.png';
 
-const menuItems = {
-  'Cursos': [
-    { label: 'Crear curso', path: '/NewCourse' },
-    { label: 'Ver cursos', path: '/See_Courses' },
-  ],
-  'Mis Cursos': [
-    { label: 'Cursos matriculados', path: '/my-courses/enrolled' },
-    { label: 'Matricular cursos', path: '/my-courses/enroll' },
-  ],
-  'Amigos': [
-    { label: 'Buscar usuario', path: '/friends/search' },
-    { label: 'Ver amigos', path: '/friends/list' },
-  ],
-  'Evaluaciones': [
-    { label: 'Ver Evaluaciones', path: '/evaluations' }
-  ],
-  'Perfil': [
-    { label: 'Editar perfil', path: '/profile/edit' },
-    { label: 'Cerrar sesión', path: 'logout' },
-  ],
-};
+const menuItems = menuItemsShared;
 
 const SeeCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -67,8 +49,6 @@ const SeeCourses = () => {
             courseId: courseId,
           }),
         });
-       
-        const data = await res.json();
         
         if (res.ok) {
           toast.success('Curso matriculado con éxito!');
@@ -143,10 +123,13 @@ const SeeCourses = () => {
             </div>
             <div className="user-info">
               <img
-                className="avatar"
-                src="https://via.placeholder.com/45"
-                alt="User Avatar"
-                title="Perfil"
+                  src={user?.avatar_url || profile_icon}
+                  alt="avatar"
+                  className="avatar"
+                  onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = profile_icon;
+                  }}
               />
             </div>
           </header>
