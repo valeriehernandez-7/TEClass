@@ -354,21 +354,21 @@ async function NewCourseRelationship (userId, courseId) {
     }
 }
 
-async function getEstudiantesIds(CourseId) {
+async function getEstudiantesIds(courseId) {
     const { session } = getNeo4jSession();
 
     try {
         const result = await session.run(
-            `
-            MATCH (c:Course {course_id: $CourseId})-[:HAS_ENROLED]->(u:User)
-            RETURN u.user_id AS id
-            `,
-            { CourseId }
+            
+            `MATCH (c:Course {course_id: $courseId})-[:HAS_ENROLED]->(u:User)
+            RETURN u.user_id AS id`
+            ,
+            { courseId }
         );
 
         return result.records.map(r => r.get('id'));
     } catch (error) {
-        console.error('Error consiguiendo los id de los estudiantes matriculados:', error);
+        console.error('Error getting codigos de cursos matriculados:', error);
         throw error;
     } finally {
         await session.close();

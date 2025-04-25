@@ -253,37 +253,11 @@ async function getCursosMatriculados(userId) {
   }
 }
   
-async function getEstudiantesDelCurso(codigoCurso) {
-    const { db, client } = await connectMongo();
-    try {
-      // Buscar el curso por código
-      const curso = await db.collection('cursos').findOne({ codigo: codigoCurso });
-      
-      if (!curso) {
-        console.error(`Curso con código ${codigoCurso} no encontrado.`);
-        return [];
-      }
-  
-      // Verificar si el campo estudiantes existe y es un array
-      if (!Array.isArray(curso.estudiantes) || curso.estudiantes.length === 0) {
-        console.log(`No hay estudiantes matriculados en el curso con código ${codigoCurso}.`);
-        return [];
-      }
-  
-      // Obtener los estudiantes asociados al curso
-      const estudiantes = await db.collection('usuarios')
-        .find({ _id: { $in: curso.estudiantes.map(id => id.toString()) } })
-        .project({ _id: 1, nombre: 1 })
-        .toArray();
-  
-      return estudiantes;
-    } catch (error) {
-      console.error('Error obteniendo estudiantes del curso:', error);
-      throw error;
-    } finally {
-      // Cerrar la conexión de la base de datos
-      await client.close();
-    }
+async function getEstudiantesDelCurso(userIds) {
+    const { db } = await connectMongo();
+    const objectIds = userIds.map(id => new ObjectId(id));
+    const users = await db.collection('User').find({ _id: { $in: objectIds } }).toArray();
+    return users;
   }
 
 async function getCoursesbyId(coursesId) {
