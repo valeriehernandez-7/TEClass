@@ -364,5 +364,6 @@ module.exports = {
     getCodigosCursosCreados,
     getCodigosCursosMatriculados,
     Matricular,
-    NewCourseRelationship
+    NewCourseRelationship,
+    getCodigosCursosCreados,
 };
