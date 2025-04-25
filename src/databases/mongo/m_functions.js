@@ -2,6 +2,8 @@ const connectMongo = require('./m_connection');
 const crypto = require('crypto');
 const { ObjectId } = require('mongodb');
 
+const VALID_STATUSES = ['editing', 'published', 'active', 'closed'];
+
 /* This function gets an user from the db, searching it by id. */
 
 async function getUserById(userId) {
@@ -281,6 +283,24 @@ async function getCoursesbyId(coursesId) {
   return courses;
 }
 
+async function updateCourseStatus(courseId, newStatus) {
+  if (!VALID_STATUSES.includes(newStatus)) {
+      throw new Error(`Invalid status "${newStatus}". Valid options are: ${VALID_STATUSES.join(', ')}`);
+  }
+
+  const { db } = await connectMongo();
+  const result = await db.collection('Course').updateOne(
+      { _id: new ObjectId(courseId) },
+      { $set: { status: newStatus } }
+  );
+  console.log('Result: ',result);
+  if (result.matchedCount === 0) {
+      return { message: `No course found with ID ${courseId}` };
+  }
+
+  return { message: `Course status updated to "${newStatus}" successfully.` };
+}
+
 module.exports = {
     getUserById,
     getUserByUsername,
@@ -297,5 +317,6 @@ module.exports = {
     getCursosMatriculados,
     getEstudiantesDelCurso,
     getCoursesbyId,
-    getCourseByCode
+    getCourseByCode,
+    updateCourseStatus
 };

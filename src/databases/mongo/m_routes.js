@@ -14,7 +14,8 @@ const { getUserById,
         getCursosMatriculados,
         getEstudiantesDelCurso,
         getCoursesbyId,
-        getCourseByCode
+        getCourseByCode,
+        updateCourseStatus
 } = require('./m_functions');
 
 /* 
@@ -204,8 +205,6 @@ router.get('/getCoursesByIds/:ids', async (req, res) => {
     }
 }); 
 
-
-
 router.get('/getCourseByCode/:code', async (req, res) => {
     const courseCode = req.params.code; // Check both params and query for courseCode
     if (!courseCode) {
@@ -220,6 +219,28 @@ router.get('/getCourseByCode/:code', async (req, res) => {
         res.json(course);
     } catch (err) {
         console.error('Error getting course:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+router.put('/updateCourseStatus/:id', async (req, res) => {
+    const courseId = req.params.id;
+    const { status } = req.body;
+
+    if (!status) {
+        return res.status(400).json({ success: false, message: 'Missing status' });
+    }
+
+    try {
+        console.log('Updating course status:', { courseId, status });
+        console.log('courseId:', courseId);
+        const updatedCourse = await updateCourseStatus(courseId, status);
+        if (!updatedCourse) {
+            return res.status(404).json({ success: false, message: 'Course not found or not updated' });
+        }
+        res.json({ success: true, data: updatedCourse });
+    } catch (err) {
+        console.error('Error updating course status:', err);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });

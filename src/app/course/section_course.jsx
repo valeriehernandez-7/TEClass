@@ -61,8 +61,6 @@ const menuItems = menuItemsShared;
         }
     };
 
-    
-
     useEffect(() => {
         fetchCourse();
       if (course.section) {
@@ -73,9 +71,28 @@ const menuItems = menuItemsShared;
     
     const [status, setStatus] = useState(course.status);
    
-    const handleUpdateStatus = () => {
-      
-      // Send to backend logic here
+    const handleUpdateStatus = async () => {
+      try {
+        const response = await fetch(`http://localhost:4000/api/mongo/updateCourseStatus/${course._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status }),
+        });
+    
+        if (response.ok) {
+          const result = await response.json();
+          toast.success('Estado del curso actualizado correctamente');
+          setCourse((prev) => ({ ...prev, status }));
+        } else {
+          const errMsg = await response.text();
+          toast.error(`Error al actualizar estado: ${errMsg}`);
+        }
+      } catch (error) {
+        console.error('Error en handleUpdateStatus:', error);
+        toast.error('Error de servidor al actualizar el estado');
+      }
     };
   
     const updateResource = (index, event) => {
