@@ -30,6 +30,7 @@ const StudentsXCourse = () => {
   // Función para obtener los detalles de los estudiantes desde MongoDB
   const fetchStudentDetailsFromMongo = async (studentIds) => {
     try {
+      console.log('IDs de estudiantes:', studentIds);
       const res = await fetch(`http://localhost:4000/api/mongo/getEstudiantesDetailsByIds/${studentIds.join(',')}`);
       if (!res.ok) throw new Error('Failed to get student details from MongoDB');
       

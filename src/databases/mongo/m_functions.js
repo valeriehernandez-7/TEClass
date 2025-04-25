@@ -255,9 +255,20 @@ async function getCursosMatriculados(userId) {
   
 async function getEstudiantesDelCurso(userIds) {
     const { db } = await connectMongo();
-    const objectIds = userIds.map(id => new ObjectId(id));
-    const users = await db.collection('User').find({ _id: { $in: objectIds } }).toArray();
-    return users;
+  
+    try {
+        console.log('userIds recibidos:', userIds);
+      const users = await db
+        .collection('User')
+        .find({ user_id: { $in: userIds } }) // Aquí se usa user_id
+        .project({ username: 1, first_name: 1, last_name: 1, avatar_url: 1, role: 1 }) // Puedes ajustar los campos que necesites
+        .toArray();
+  
+      return users;
+    } catch (error) {
+      console.error('Error obteniendo usuarios:', error);
+      throw error;
+    }
   }
 
 async function getCoursesbyId(coursesId) {

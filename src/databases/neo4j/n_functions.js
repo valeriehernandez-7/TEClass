@@ -306,7 +306,6 @@ async function Matricular(userId, courseId) {
         MERGE (u:User {user_id: $id1})
         MERGE (c:Course {course_id: $id2})
         CREATE (u)-[:ENROLLED_IN]->(c)
-        CREATE (c)-[:HAS_ENROLED]->(u)
         RETURN u, c
         `,
         { id1, id2 }
@@ -360,15 +359,17 @@ async function getEstudiantesIds(courseId) {
     try {
         const result = await session.run(
             
-            `MATCH (c:Course {course_id: $courseId})-[:HAS_ENROLED]->(u:User)
+            `MATCH (u:User)-[:ENROLLED_IN]->(c:Course {course_id: $courseId})
             RETURN u.user_id AS id`
             ,
             { courseId }
         );
-
+        result.records.forEach((record, i) => {
+            console.log(`Record ${i}:`, record.toObject());
+          });
         return result.records.map(r => r.get('id'));
     } catch (error) {
-        console.error('Error getting codigos de cursos matriculados:', error);
+        console.error('Error getting ids de estudiantes matriculados:', error);
         throw error;
     } finally {
         await session.close();

@@ -242,22 +242,21 @@ router.post('/getUsersByIds', async (req, res) => {
   });
 
   router.get('/getEstudiantesDetailsByIds/:ids', async (req, res) => {
-    const idsString = req.params.ids;
-  
-    if (!idsString) {
-      return res.status(400).json({ error: 'Se requieren IDs en la URL' });
+    const ids = req.params.ids.split(','); // ['id1', 'id2', 'id3'] // Check both params and query for ids
+    if (!ids) {
+        return res.status(400).json({ success: false, message: 'Missing course IDs' });
     }
-  
     try {
-      const stringIds = idsString.split(',').map(id => id.trim());
-      const objectIds = stringIds.map(id => new ObjectId(id));
-      const estudiantes = await getEstudiantesDelCurso(objectIds);
-      res.status(200).json(estudiantes);
-    } catch (error) {
-      console.error('Error al obtener detalles de estudiantes desde MongoDB:', error);
-      res.status(500).json({ error: 'Error al obtener detalles de estudiantes' });
+        const users = await getEstudiantesDelCurso(ids);
+        if (!users || users.length === 0) {
+            return res.status(404).json({ success: false, message: 'Users not found' });
+        }
+        res.json(users);
+    } catch (err) {
+        console.error('Error getting users:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
     }
-  });
+}); 
   
 
 module.exports = router;
