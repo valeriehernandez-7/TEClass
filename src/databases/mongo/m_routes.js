@@ -192,7 +192,6 @@ router.get('/getCoursesByIds/:ids', async (req, res) => {
     if (!ids) {
         return res.status(400).json({ success: false, message: 'Missing course IDs' });
     }
-  
     try {
         const courses = await getCoursesbyId(ids);
         if (!courses || courses.length === 0) {

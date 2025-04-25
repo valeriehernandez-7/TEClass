@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
-import './see_courses.css';
+import './EnrolledIn_Courses.css';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { View } from 'lucide-react';
 import { UserContext } from '../../shared/UserSession';
+import menuItemsShared from '../../shared/menuitems.js';
+import profile_icon from '../../assets/profile_photo.png';
 
 const SeeEnrolledCourses = () => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -35,6 +37,7 @@ const SeeEnrolledCourses = () => {
       }
       
       const data = await response.json();
+      console.log('Fetched courses:', data); // Log the response object
        // Log the fetched courses
       return data;
     } catch (error) {
@@ -46,12 +49,13 @@ const SeeEnrolledCourses = () => {
     const loadCourses = async () => {
       const courseIds = await fetchEnrolledCourseIds();
       if (courseIds.length > 0) {
-        await fetchCoursesFromMongo(courseIds);
+        const courses = await fetchCoursesFromMongo(courseIds);
+        setEnrolledCourses(courses);
       }
     };
-
+  
     if (user?.id) loadCourses();
-  }, [user]);
+  }, [user]);  
 
   return (
     <div className="menu-container">
@@ -63,7 +67,15 @@ const SeeEnrolledCourses = () => {
           </div>
         </div>
         <div className="user-info">
-          <img className="avatar" src="https://via.placeholder.com/45" alt="User Avatar" title="Perfil" />
+          <img
+            src={user?.avatar_url || profile_icon}
+            alt="avatar"
+            className="avatar"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = profile_icon;
+            }}
+          />
         </div>
       </header>
 
@@ -72,17 +84,17 @@ const SeeEnrolledCourses = () => {
         <div className="courses-wrapper">
           <div className="course-dropdown">
             {enrolledCourses.length > 0 ? (
-              enrolledCourses.map((course) => (
-                <div className="course-card" key={course._id || course.code}>
-                  <img src={course.image_url} alt="Course" className="course-image" />
+              enrolledCourses.map((data) => (
+                <div className="course-card" key={data._id || data.code}>
+                  <img src={data.image_url} alt="Course" className="course-image" />
                   <div className="course-info">
-                    <p><strong>Código:</strong> {course.code}</p>
-                    <p><strong>Nombre:</strong> {course.name}</p>
-                    <p><strong>Fecha de Inicio:</strong> {course.start_date}</p>
-                    <p><strong>Fecha Final:</strong> {course.end_date}</p>
+                    <p><strong>Código:</strong> {data.code}</p>
+                    <p><strong>Nombre:</strong> {data.name}</p>
+                    <p><strong>Fecha de Inicio:</strong> {data.start_date}</p>
+                    <p><strong>Fecha Final:</strong> {data.end_date}</p>
                   </div>
                   <div className="course-buttons">
-                    <button onClick={() => navigate(`/courseViewMore/${course._id}`)}>Ver más</button>
+                    <button onClick={() => navigate(`/courseViewMore/${data._id}`)}>Ver más</button>
                   </div>
                 </div>
               ))

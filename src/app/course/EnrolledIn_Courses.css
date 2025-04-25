@@ -35,6 +35,21 @@ body {
   z-index: 1;
 }
 
+.course-dropdown {
+  max-height: 500px; /* Ajustalo según el diseño que quieras */
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.course-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.course-dropdown::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
 .dropdown-item {
   padding: 8px 12px;
   cursor: pointer;

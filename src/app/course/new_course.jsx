@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import '../../shared/Form.css';
 import '../../app/user/Menu.css';
 import './new_course.css';
+import profile_icon from '../../assets/profile_photo.png';
 import { UserContext } from '../../shared/UserSession';
 import  defaultImagePath from '../../assets/course_default_img.png'; // Import the default image path
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import menuItemsShared from '../../shared/menuitems.js';
 
 const toBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -15,36 +17,13 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.onerror = reject;
 });
 
-const menuItems = {
-  'Cursos': [
-    { label: 'Crear curso', path: '/NewCourse' },
-    { label: 'Ver cursos', path: '/See_Courses' },
-  ],
-  'Mis Cursos': [
-    { label: 'Cursos matriculados', path: '/my-courses/enrolled' },
-    { label: 'Matricular cursos', path: '/my-courses/enroll' },
-  ],
-  'Amigos': [
-    { label: 'Buscar usuario', path: '/friends/search' },
-    { label: 'Ver amigos', path: '/friends/list' },
-  ],
-  'Evaluaciones': [
-    { label: 'Ver Evaluaciones', path: '/evaluations' }
-  ],
-  'Perfil': [
-    { label: 'Editar perfil', path: '/profile/edit' },
-    { label: 'Cerrar sesión', path: 'logout' },
-  ],
-};
+const menuItems = menuItemsShared;
 
 const NewCourse = () => {
   const navigate = useNavigate();
-  const { user1, clearUser } = '';
 
   const { user } = useContext(UserContext);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-   // relative to public folder
   const [imagePreview, setImagePreview] = useState(defaultImagePath);
   const [formData, setFormData] = useState({
     code: '',
@@ -56,12 +35,9 @@ const NewCourse = () => {
     status: '',
     section: {},
   });
-
-
     
   const handleOptionClick = (item) => {
     if (item.path === 'logout') {
-      clearUser();
       navigate('/');
     } else {
       navigate(item.path);
@@ -206,12 +182,15 @@ const NewCourse = () => {
           ))}
         </div>
         <div className="user-info">
-          <img
+        <img
+            src={user?.avatar_url || profile_icon}
+            alt="avatar"
             className="avatar"
-            src="https://via.placeholder.com/45"
-            alt="User Avatar"
-            title="Perfil"
-          />
+            onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = profile_icon;
+            }}
+        />
         </div>
       </header>
 
@@ -269,7 +248,6 @@ const NewCourse = () => {
                 onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
               />
             </label>
-
             <label>
               Fecha de finalización:
               <input

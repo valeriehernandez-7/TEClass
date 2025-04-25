@@ -11,7 +11,8 @@ import NewCourse from './app/course/new_course.jsx';
 import EnrolledIn_Courses from './app/course/EnrolledIn_Courses.jsx';
 import CoursesCreated from './app/course/CoursesCreated.jsx';
 import CourseList from './app/course/see_courses.jsx';
-import CourseViewMore from './app/course/CourseViewMorePROFESSOR.jsx';
+import CourseViewMoreProf from './app/course/CourseViewMorePROFESSOR.jsx';
+import CourseViewMore from './app/course/CourseViewMore.jsx';
 import CourseSection from './app/course/section_course.jsx';
 import CloneCourse  from './app/course/CloneCourse.jsx';
 import Chat from './app/user/Chat.jsx';
@@ -27,6 +28,7 @@ function App() {
         <Route path="/friends/list" element={<Friends />} />
         <Route path="/NewCourse" element={<NewCourse/>}/>
         <Route path="/See_Courses" element={<CourseList/>}/>
+        <Route path="/courseViewMoreProf/:id" element={<CourseViewMoreProf/>}/>
         <Route path="/courseViewMore/:id" element={<CourseViewMore/>}/>
         <Route path="/courseSection/:id" element={<CourseSection/>}/>
         <Route path="/CloneCourse/:id" element={<CloneCourse/>}/>

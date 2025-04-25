@@ -22,6 +22,10 @@
     border-radius: 6px;
     font-size: 14px;
   }
+
+  .search-area input::placeholder{
+    color: #ffffff;
+}
   
   .search-area button {
     background-color: #937E0A;
