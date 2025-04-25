@@ -15,7 +15,11 @@ const { getUserById,
         getEstudiantesDelCurso,
         getCoursesbyId,
         getCourseByCode,
-        updateCourseStatus
+        updateCourseStatus,
+        updateSectionTitle,
+        updateSubSecTitle,
+        addResource,
+        addSubResource
 } = require('./m_functions');
 
 /* 
@@ -232,8 +236,6 @@ router.put('/updateCourseStatus/:id', async (req, res) => {
     }
 
     try {
-        console.log('Updating course status:', { courseId, status });
-        console.log('courseId:', courseId);
         const updatedCourse = await updateCourseStatus(courseId, status);
         if (!updatedCourse) {
             return res.status(404).json({ success: false, message: 'Course not found or not updated' });
@@ -242,6 +244,50 @@ router.put('/updateCourseStatus/:id', async (req, res) => {
     } catch (err) {
         console.error('Error updating course status:', err);
         res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+router.put('/updateSectionTitle/:courseId', async (req, res) => {
+    const { courseId } = req.params;
+    try {
+        const result = await updateSectionTitle(courseId, req.body);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error('Error updating section title:', err);
+        res.status(500).send('Failed to update section title');
+    }
+});
+
+router.put('/updateSubSecTitle/:courseId', async (req, res) => {
+    const { courseId } = req.params;
+    try {
+        const result = await updateSubSecTitle(courseId, req.body);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error('Error updating subsection title:', err);
+        res.status(500).send('Failed to update subsection title');
+    }
+});
+
+router.post('/addResource/:courseId', async (req, res) => {
+    const { courseId } = req.params;
+    try {
+        const result = await addResource(courseId, req.body);
+        res.status(201).json(result);
+    } catch (err) {
+        console.error('Error adding resource:', err);
+        res.status(500).send('Failed to add resource');
+    }
+});
+
+router.post('/addSubResource/:courseId', async (req, res) => {
+    const { courseId } = req.params;
+    try {
+        const result = await addSubResource(courseId, req.body);
+        res.status(201).json(result);
+    } catch (err) {
+        console.error('Error adding subresource:', err);
+        res.status(500).send('Failed to add subresource');
     }
 });
 

@@ -16,8 +16,6 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.onerror = reject;
 });
 
-const menuItems = menuItemsShared;
-
 const CloneCourse = () => {
   const { id } = useParams();
   const navigate = useNavigate();

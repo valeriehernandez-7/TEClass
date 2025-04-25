@@ -46,9 +46,7 @@ const menuItems = menuItemsShared;
     
       const fetchCourse = async () => {
         try {
-            // Log the course ID being fetched
             const res = await fetch(`http://localhost:4000/api/mongo/getCourseById/${id}`);
-            // Log the response object
             if (res.ok) {
                 const data = await res.json();
                 setCourse(data);
@@ -65,7 +63,6 @@ const menuItems = menuItemsShared;
         fetchCourse();
       if (course.section) {
         setSections([course.section]);
-        // Log the sections
       }
     }, [id]);
     
@@ -117,19 +114,34 @@ const menuItems = menuItemsShared;
         }
       };
       
-      // Send to backend logic here
     };
   
     const handleAddSubsection = () => {
      
-      // Send to backend logic here
-    };
-    
-    const handleAddSection = () => {
-      // Send request to add section
     };
   
-   
+    const handleAddSection = async (courseId, newTitle) => {
+      try {
+        const response = await fetch(`http://localhost:4000/api/mongo/updateSectionTitle/${course._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: newTitle,
+          }),
+        });
+    
+        if (!response.ok) {
+          throw new Error('Error al actualizar el título de la sección');
+        }
+    
+        const result = await response.json();
+        console.log('Título actualizado:', result);
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    };    
   
     const handleAddResourceToSection = () => {
       // Send request to add resource to section

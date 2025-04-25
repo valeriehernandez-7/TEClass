@@ -301,6 +301,40 @@ async function updateCourseStatus(courseId, newStatus) {
   return { message: `Course status updated to "${newStatus}" successfully.` };
 }
 
+async function updateSectionTitle(courseId, newTitle) {
+  await db.collection('Course').updateOne(
+    { _id: new ObjectId(courseId) },
+    { $set: { 'section.section_title': newTitle } }
+  );
+}
+
+async function updateSubSecTitle(courseId, newSubTitle) {
+  await db.collection('Course').updateOne(
+    { _id: new ObjectId(courseId) },
+    { $set: { 'section.sub_section.sub_title': newSubTitle } }
+  );
+}
+
+async function addResource(courseId, newResource) {
+  await db.collection('Course').updateOne(
+    {
+      _id: new ObjectId(courseId),
+      'section.resources': { $exists: true, $not: { $size: 5 } }
+    },
+    { $push: { 'section.resources': newResource } }
+  );
+}
+
+async function addSubResource(courseId, newSubResource) {
+  await db.collection('Course').updateOne(
+    {
+      _id: new ObjectId(courseId),
+      'section.sub_section.sub_resources': { $exists: true, $not: { $size: 5 } }
+    },
+    { $push: { 'section.sub_section.sub_resources': newSubResource } }
+  );
+}
+
 module.exports = {
     getUserById,
     getUserByUsername,
@@ -318,5 +352,9 @@ module.exports = {
     getEstudiantesDelCurso,
     getCoursesbyId,
     getCourseByCode,
-    updateCourseStatus
+    updateCourseStatus,
+    updateSectionTitle,
+    updateSubSecTitle,
+    addResource,
+    addSubResource
 };
